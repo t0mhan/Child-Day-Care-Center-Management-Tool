@@ -14,7 +14,7 @@ public class DayCareMgtAppRunner {
 			choice = Integer.parseInt(inputChoice.nextLine());
 			switch(choice){
 			case 1: 
-				AdminController adminCtrl = new AdminController();
+				AdminController adminCtrl = new AdminController(inputChoice);
 				//adminCtrl.startOperations();
 				break;
 			case 2:

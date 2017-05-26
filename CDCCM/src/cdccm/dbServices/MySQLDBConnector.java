@@ -2,6 +2,8 @@ package cdccm.dbServices;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 //import edu.sdp.dbServices.MySQLDBConnector;
@@ -17,7 +19,8 @@ public class MySQLDBConnector {
 		String dbName = "cdccmDB";
 		String driver = "com.mysql.jdbc.Driver";
 		String userName = "root";//default user name
-		String password = "admin";//default password
+		String password = "root";//default password
+		
 		try {
 			Class.forName(driver).newInstance();
 			this.conn = (Connection) DriverManager.getConnection(url + dbName, userName, password);
@@ -25,15 +28,30 @@ public class MySQLDBConnector {
 			sqle.printStackTrace();
 		}
 	}
+	
 	public static MySQLDBConnector getInstance() {
 		if (dbConnectorObj == null)
 			dbConnectorObj = new MySQLDBConnector();
 		return dbConnectorObj;
 	}
 	
-	/* SQL queries to be written here
-	 * insert update delete
-	 */
+	public ResultSet query(String query) throws SQLException {
+		resultStatement = conn.createStatement();
+		ResultSet res = resultStatement.executeQuery(query);
+		return res;
+	}
+
+	public int insert(String insertQuery) throws SQLException {
+		resultStatement = conn.createStatement();
+		int resultCount = resultStatement.executeUpdate(insertQuery);
+		return resultCount;
+
+	}
 	
+	public int delete(String deleteQuery) throws SQLException {
+		resultStatement = conn.createStatement();
+		int resultCount = resultStatement.executeUpdate(deleteQuery);
+		return resultCount;
+	}
 
 }
