@@ -15,7 +15,7 @@ public class DayCareMgtAppRunner {
 			switch(choice){
 			case 1: 
 				AdminController adminCtrl = new AdminController(inputChoice);
-				//adminCtrl.startOperations();
+				adminCtrl.startOperations();
 				break;
 			case 2:
 				CareProviderController careProviderCtrl = new CareProviderController();

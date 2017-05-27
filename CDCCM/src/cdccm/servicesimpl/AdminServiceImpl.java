@@ -1,5 +1,6 @@
 package cdccm.servicesimpl;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import cdccm.dbServices.MySQLDBConnector;
@@ -37,8 +38,24 @@ public class AdminServiceImpl implements AdminService {
 	}
 	@Override
 	public void listAllChild() {
-		// TODO Auto-generated method stub
+		ResultSet childrenList;
+		int numberOfChild = 1;
 		
+		try {
+			childrenList = dbConnector.query("SELECT * FROM CHILD");
+			while(childrenList.next()){
+				System.out.println("Details of Child: "+numberOfChild);
+				System.out.println("First Name:"+ childrenList.getString("fname"));
+				System.out.println("Last Name:"+ childrenList.getString("lname"));
+				System.out.println("Date Of Birth:"+ childrenList.getString("dob"));
+				System.out.println("Age:"+ childrenList.getString("age"));
+				numberOfChild++;
+				System.out.println("");
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	@Override
 	public void insertCareProvider() {

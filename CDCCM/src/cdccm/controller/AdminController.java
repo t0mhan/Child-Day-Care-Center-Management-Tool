@@ -21,7 +21,7 @@ public class AdminController {
 	public void startOperations(){
 		do{
 			System.out.println("User Logged In As Admin. \n Now Select An Operation To Perform");
-			System.out.println("1. Register A Child. 3. Register Care Provider \n 4. List All Children \n 5. Generate Performance Report Of Child "
+			System.out.println("1. Register A Child. 2. Register Care Provider \n 3. List All Children \n 4. Generate Performance Report Of Child "
 					+ "\n 6. Send News or Events To Parent \n 7. Send Schedule Of Child   \n . Main Menu.");
 			int choice = 0;
 			choice = Integer.parseInt(inputScanner.nextLine());
@@ -35,24 +35,21 @@ public class AdminController {
 				}
 				break;
 			case 2:
-				
-				break;
-			case 3:
 				addCareProvider();
 				break;
-			case 4:
+			case 3:
 				showAllChildren();
 				break;
-			case 5:
+			case 4:
 				generateReport();
 				break;
-			case 6:
+			case 5:
 				sendNewsEvents();
 				break;
-			case 7:
+			case 6:
 				generateSchedule();
 				break;
-			case 8:
+			case 7:
 				choiceFlag = false;
 				break;
 			default:
@@ -96,13 +93,13 @@ public class AdminController {
 		adminService.insertChildDetails(childPOJO, parentPOJO);
 	}
 	
-	
 	private void addCareProvider() {
 		// TODO Auto-generated method stub
 		
 	}
 	private void showAllChildren() {
-		// TODO Auto-generated method stub
+		System.out.println("Here Is List Of All Children");
+		adminService.listAllChild();
 		
 	}
 
