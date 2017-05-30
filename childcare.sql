@@ -72,7 +72,7 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
 
-6.   create activity,material table?/*now activity is connected to provider,session,ageGroup(many(activities)-one(provider))*/
+6.   create activity,material table?/*now activity is connected to provider,session,ageGroup(many(activities)-one(provider));before creating this table create age_group,day_session,rating,care_provider tables.*/
     ANS:
 	
 	 
