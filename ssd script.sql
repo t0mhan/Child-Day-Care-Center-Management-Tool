@@ -12,9 +12,20 @@ CREATE TABLE `child_care`.`age_group` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-2. create child info table ?
+2. create parent table ?
 ANS: 
+CREATE TABLE `child_care`.`parent` (
+  `idparent` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `surname` VARCHAR(45) NOT NULL,
+  UNIQUE INDEX `indx_idparent` (`idparent` ASC),
+  PRIMARY KEY (`idparent`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
 
+3. create child info table ?
+ANS: 
 CREATE TABLE `child_care`.`child_info` (
   `idchild` INT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
@@ -22,27 +33,29 @@ CREATE TABLE `child_care`.`child_info` (
   `dob` DATE NOT NULL,
   `age` INT UNSIGNED NOT NULL,
   `fk_age_group` INT UNSIGNED NOT NULL,
+  `fk_idparent` INT  UNSIGNED NOT NULL,
   PRIMARY KEY (`idchild`),
   FOREIGN KEY child_info(fk_age_group) references  age_group(idage_group) on update cascade,
+  CONSTRAINT child_info.fk_idparent FOREIGN KEY(fk_idparent) references  parent(idparent) on update cascade,
   UNIQUE INDEX `indx_child_id` (`idchild` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
-3. create parent table?
-ANS:
+insert into age_group(name,min_age,max_age)
+value
+('Infant',1,2),
+('Preschool',2,3),
+('kindergarten',3,4);
 
-CREATE TABLE `child_care`.`parent` (
-  `idparent` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NOT NULL,
-  `surname` VARCHAR(45) NOT NULL,
-  `fk_idchild` INT UNSIGNED NOT NULL ,
-  UNIQUE INDEX `indx_idparent` (`idparent` ASC),
-  PRIMARY KEY (`idparent`),
-  FOREIGN KEY parent(`fk_idchild`) REFERENCES  child_info(idchild) ON DELETE CASCADE) 
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_general_ci;
+insert into parent(name,surname)
+value
+('Dhirubhai','Ambani');
+
+insert into child_info(name,surname,dob,age,fk_age_group,fk_idparent)
+value('mukesh','Ambani','1991-04-02',26,3,1),
+('Anil','Ambani','1991-04-02',26,3,1);
+
 
 4. create contact table?
 CREATE TABLE `child_care`.`contact` (
