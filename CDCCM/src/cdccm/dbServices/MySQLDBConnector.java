@@ -6,9 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-//import edu.sdp.dbServices.MySQLDBConnector;
-
-
 public class MySQLDBConnector {
 	public Connection conn;
 	private Statement resultStatement;
@@ -45,7 +42,6 @@ public class MySQLDBConnector {
 		resultStatement = conn.createStatement();
 		int resultCount = resultStatement.executeUpdate(insertQuery);
 		return resultCount;
-
 	}
 	
 	public int delete(String deleteQuery) throws SQLException {

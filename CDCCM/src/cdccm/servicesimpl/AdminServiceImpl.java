@@ -21,15 +21,12 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void insertChildDetails(ChildPOJO childPOJO) throws SQLException{
 		int age = CdccmUtilities.getAge();
-		
-		
 	
 		// on the basis of age_calculartor utility we can decide age group, no additional query to get fk_age_group
 		int ageGroup = 2;
 		int resultCountChild = dbConnector.
 				insert("INSERT INTO CHILD_INFO(name,surname,dob,age,fk_age_group,fk_idparent) VALUES('" +childPOJO.getFirst_name()+ "','"
 		        +childPOJO.getLast_name() + "','"+childPOJO.getDob()+ "','"+age+"','"+ageGroup+"',"+"(SELECT MAX(IDPARENT) from PARENT)"+")");
-		
 		
 		if (resultCountChild  > 0)
 			System.out.println("Child Record Inserted Successfully");
@@ -53,26 +50,11 @@ public class AdminServiceImpl implements AdminService {
 			System.out.println("Error Inserting Record Please Try Again");
 	}
 	
-	
 	@Override
-	public void listAllChild() {
+	public ResultSet listAllChild() throws SQLException {
 		ResultSet childrenList;
-		int numberOfChild = 1;
-		
-		try {
-			childrenList = dbConnector.query("SELECT * FROM CHILD");
-			while(childrenList.next()){
-				System.out.println("Details of Child: "+numberOfChild);
-				System.out.println("First Name:"+ childrenList.getString("fname"));
-				System.out.println("Last Name:"+ childrenList.getString("lname"));
-				System.out.println("Date Of Birth:"+ childrenList.getString("dob"));
-				System.out.println("Age:"+ childrenList.getString("age"));
-				numberOfChild++;
-				System.out.println("");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		childrenList = dbConnector.query("SELECT * FROM CHILD_INFO");
+		return childrenList;
 	}
 	@Override
 	public void insertCareProvider(CareProviderPOJO careProviderPOJO) {

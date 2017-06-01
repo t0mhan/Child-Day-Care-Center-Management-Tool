@@ -1,4 +1,5 @@
 package cdccm.controller;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -20,7 +21,7 @@ public class AdminController {
 		adminService = new AdminServiceImpl();
 	}
 	
-	public void startOperations(){
+	public void startOperations() throws SQLException{
 		do{
 			System.out.println("User Logged In As Admin. \nNow Select An Operation To Perform");
 			System.out.println("1. Register A Child. \n2. Register Care Provider \n3. List All Children \n4. Generate Performance Report Of Child "
@@ -100,8 +101,7 @@ public class AdminController {
 		contactPOJO.setPhoneNumber(inputScanner.nextLine());
 		adminService.insertParentDetails(parentPOJO,contactPOJO);
 	}
-	
-	
+		
 	private void addChild() throws SQLException {
 
 		ChildPOJO childPOJO = new ChildPOJO();
@@ -115,7 +115,6 @@ public class AdminController {
 		childPOJO.setDob(inputScanner.nextLine());
 		adminService.insertChildDetails(childPOJO);
 	}
-	
 	
 	private void addCareProvider() {
 		
@@ -131,10 +130,20 @@ public class AdminController {
 		adminService.insertCareProvider(careProviderPOJO);
 	}
 	
-	private void showAllChildren() {
+	private void showAllChildren() throws SQLException {
 		System.out.println("Here Is List Of All Children");
-		adminService.listAllChild();
-		
+		ResultSet childList = adminService.listAllChild();
+		int numberOfChild = 1;
+		while(childList.next()){
+			System.out.println("Details of Child: "+numberOfChild);
+			System.out.println("First Name:"+ childList.getString("name"));
+			System.out.println("Last Name:"+ childList.getString("surname"));
+			System.out.println("Date Of Birth:"+ childList.getString("dob"));
+			System.out.println("Age:"+ childList.getString("age"));
+			numberOfChild++;
+			System.out.println("---------");
+		}
+		System.out.println("Above Is The List Of Children\n");
 	}
 
 	private void sendNewsEvents() {
