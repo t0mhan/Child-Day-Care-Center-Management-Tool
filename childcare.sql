@@ -448,11 +448,44 @@ group by fk_session,fk_age_group,activity_name;
         SET @childid=2,1....; 
       /*Note******** accurate selection of Activity in a perticualar session is 'very very' important parent must select only those activity which is availabe for that age group in that session*/
 	insert into report(fk_idchild,fk_idactivity,fk_idsession)
-	values(@childid,13,102),(@childid,16,101),(@childid,17,103);/*
-
+	values(@childid,13,102),(@childid,16,101),(@childid,17,103);
+       
+       
+       
+ 3. Admin Will assign the providers to the activities
+     a)  first admin will check which are the avilable providers for the activities   
+       drop procedure if exists CareProviderChildAssociation1; 
+    DELIMITER $$
+    create procedure CareProviderChildAssociation1(activityId INT, sessionId INT, providerId INT)
+    BEGIN
+    UPDATE report
+    SET    fk_idprovider=providerId
+    WHERE  fk_idactivity=activityId and fk_idsession=sessionId;
+    END$$
+    DELIMITER ;
+    SET @activityid=31;
+    SET @sessionid=101;
+    SET @providerid=1;
+    CALL CareProviderChildAssociation1(31,101,1);
+     CALL CareProviderChildAssociation1(32,101,2);
+      CALL CareProviderChildAssociation1(33,102,3);
+       CALL CareProviderChildAssociation1(34,102,4);
+        CALL CareProviderChildAssociation1(35,103,5);
+         CALL CareProviderChildAssociation1(36,103,6);
+  
+       **Now Check Which provider is available in that selected session session**   
+       
+        SET @sessionid=101,102,....
+        select t.*
+        from care_provider t
+        where t.idcare_provider NOT IN(select fk_idprovider        
+				       from report
+                                       where fk_idsession=@sessionid and fk_idprovider IS NOT NULL);
+				       
+				       
 http://www.parents.com/toddlers-preschoolers/activities/indoor/one-year-old-activities/
 
------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 > parent will be registered by admin(parent will enter all information about himself and child)
 >then he will enter userid and password 
 > admin will enter authorization key   
