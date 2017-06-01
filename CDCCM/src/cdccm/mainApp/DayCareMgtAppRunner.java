@@ -9,7 +9,7 @@ public class DayCareMgtAppRunner {
 		Scanner inputChoice = new Scanner(System.in);
 		System.out.println("++++++++++ Welcome To Day Care Center Management Application +++++++++");
 		do{
-			System.out.println("Please Secelt User Type\n 1. Admin \n 2. Care Provider \n 3. Exit \n Please Enter Your choice:\n ");
+			System.out.print("\nPlease Selcet A User Type\n1. Admin \n2. Care Provider \n3. Exit \nPlease Enter Your choice: \n");
 			int choice = 0;
 			choice = Integer.parseInt(inputChoice.nextLine());
 			switch(choice){
@@ -18,8 +18,6 @@ public class DayCareMgtAppRunner {
 				adminCtrl.startOperations();
 				break;
 			case 2:
-				CareProviderController careProviderCtrl = new CareProviderController();
-				//careProviderCtrl.startOperations();
 				break;
 			case 3:
 				choiceFlag = false;

@@ -16,10 +16,10 @@ public class MySQLDBConnector {
 	
 	private MySQLDBConnector() {
 		String url = "jdbc:mysql://localhost:3306/";
-		String dbName = "cdccmDB";
+		String dbName = "child_care";
 		String driver = "com.mysql.jdbc.Driver";
 		String userName = "root";//default user name
-		String password = "root";//default password
+		String password = "admin";//default password
 		
 		try {
 			Class.forName(driver).newInstance();
