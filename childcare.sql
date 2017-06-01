@@ -25,7 +25,11 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
-3. create child info table ?
+insert into parent(name,surname)
+value('Dhirubhai','Ambani'),
+     ('Suresh','Kulkarni');
+
+3. create child info table ?/*age group and parent tables should be created before this table*/
 ANS: 
 
 CREATE TABLE `child_care`.`child_info` (
@@ -44,6 +48,10 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
+insert into child_info(name,surname,dob,age,fk_age_group,fk_idparent)
+value('mukesh','Ambani','1991-04-02',26,3,1),
+('Anil','Ambani','1991-04-02',26,3,1);
+
 4. create contact table?
 CREATE TABLE `child_care`.`contact` (
   `idcontact` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -60,6 +68,10 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
+insert into contact(street,city,pincode,phone_number,emailid,fk_idparent)
+values('lk street 37','Mumbai',41234,'73674986501','dhirubhai@gmail.com',1),
+      ('henkel Teodral str 7','Heidelberg',65212,'345-908022143','suresh@gmail.com',2);
+      
 5. create food table?
 
 CREATE TABLE `child_care`.`food` (
@@ -111,7 +123,7 @@ COLLATE = utf8_general_ci;
    )ENGINE = InnoDB
     DEFAULT CHARACTER SET = utf8;  
 
-7.0  create ratings table for provider?/*a parent can enter rate for a provider only once but he can rate many providers(he should rate only to provider his child is dealing with)*/
+7.0  create ratings table for provider?/*provider and parent must be created befor creating this table a parent can enter rate for a provider only once but he can rate many providers(he should rate only to provider his child is dealing with)*/
     ANS:             CREATE TABLE rating( 
 	                 fk_idprovider INT UNSIGNED  NOT NULL,
                      rate TINYINT CHECK (rate BETWEEN 1 and 5),
@@ -289,24 +301,32 @@ session_name VARCHAR(40),
 COLLATE = utf8_general_ci;
 
 
- /*PREVIOUS:PRIMARY KEY(fk_idchild,fk_idactivity); changed to NOW: PRIMARY KEY(fk_idchild,fk_idsession)*/
-CREATE TABLE `child_care`.`report` (
+ /* before creating this table child_info,activity and day_session tables must be created PREVIOUS:PRIMARY KEY(fk_idchild,fk_idactivity); changed to NOW: PRIMARY KEY(fk_idchild,fk_idsession)*/
+/* provider id added to this table because we should undderstand who was the provider in that week*/
+CREATE TABLE `report` (
   fk_idchild INT unsigned NOT NULL ,
   fk_idactivity INT unsigned NOT NULL,
+  fk_idprovider  INT unsigned ,
   fk_idsession  INT unsigned  NOT NULL,
   `MON` INT(3) NULL,
   `TUE` INT(3) NULL,
   `WEN` INT(3) NULL,
   `THU` INT(3) NULL,
   `FRI` INT(3) NULL,
-  CONSTRAINT report.fk_idsession FOREIGN KEY(fk_idsession)  REFERENCES child_care.day_session(idsession),
-  FOREIGN KEY report(fk_idchild) REFERENCES child_info(idchild) ON DELETE CASCADE on update cascade,
-  FOREIGN KEY report(fk_idactivity) REFERENCES activity(idactivity) ON DELETE CASCADE on update cascade,
+  CONSTRAINT report.fk_idsession FOREIGN KEY(fk_idsession)  REFERENCES chcare.day_session(idsession),
+  CONSTRAINT report.fk_idprovider FOREIGN KEY(fk_idprovider)  REFERENCES chcare.care_provider(idcare_provider),
+  FOREIGN KEY report(fk_idchild) REFERENCES child_info(idchild) ON DELETE no action,
+  FOREIGN KEY report(fk_idactivity) REFERENCES activity(idactivity) ON DELETE no action,
   PRIMARY KEY(fk_idchild,fk_idsession)
   )ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
+/*archive table is to hold the all weeks reports*/
+create table archive like report;
+
+alter table archive
+add column dateofdump  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 12. Create AUTHENTICATION TABLE
 
@@ -403,13 +423,32 @@ group by fk_session,fk_age_group,activity_name;
   on(a.fk_age_group=ag.idage_group and a.fk_session=ds.idsession)
   where a.fk_age_group=(select ag1.idage_group 
                         from age_group ag1 
-						where ag1.idage_group=(select ch.fk_age_group 
-						                       from child_info ch 
-											   where idchild=@childid))
+			where ag1.idage_group=(select ch.fk_age_group 
+						      from child_info ch 
+	                                                  where idchild=@childid))
   
-  
+  <or>
+  select a.idactivity as ActivityId, a.activity_name,ag.name,a.fk_session as SessionID,ds.session_name,a.activity_description
+  from activity a join age_group ag join day_session ds
+  ON(a.fk_age_group=ag.idage_group and ds.idsession=a.fk_session)
+  where fk_age_group=3;     
 
-
+      /*AS we know parent id taken from login, following query will return the childs of that parent then we can compare those returned chidids with the one parent is inserting to confirm that parent is selecting activity for his child and not for others*/
+      /* checking Authorisation */
+     SET @curr_parent=1;
+     SET @childid=1:  
+      select * 
+      from child_info 
+      where idchild IN(select idchild 
+		  from child_info 
+		  where fk_idparent=);
+       
+      Now Selection of activity:- 
+       
+        SET @childid=2,1....; 
+      /*Note******** accurate selection of Activity in a perticualar session is 'very very' important parent must select only those activity which is availabe for that age group in that session*/
+	insert into report(fk_idchild,fk_idactivity,fk_idsession)
+	values(@childid,13,102),(@childid,16,101),(@childid,17,103);/*
 
 http://www.parents.com/toddlers-preschoolers/activities/indoor/one-year-old-activities/
 
