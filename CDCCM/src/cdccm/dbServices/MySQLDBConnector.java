@@ -49,5 +49,10 @@ public class MySQLDBConnector {
 		int resultCount = resultStatement.executeUpdate(deleteQuery);
 		return resultCount;
 	}
+	public ResultSet getReport(String sql, int childid) throws SQLException {
+		preparedstatement=conn.prepareStatement(sql);
+		preparedstatement.setInt(1,childid);
+		ResultSet res=preparedstatement.executeQuery();
+		return res;
 
 }
