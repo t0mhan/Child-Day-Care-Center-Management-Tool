@@ -2,6 +2,7 @@ package cdccm.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 import cdccm.pojo.CareProviderPOJO;
@@ -22,7 +23,7 @@ public class AdminController {
 		adminService = new AdminServiceImpl();
 	}
 	
-	public void startOperations() throws SQLException{
+	public void startOperations() throws SQLException, ParseException{
 		do{
 			System.out.println("User Logged In As Admin. \nNow Select An Operation To Perform");
 			System.out.println("1. Register A Child \n2. Register Care Provider \n3.Register Activity To All Children \n4.Register Activity For A Single Child \n5.Update Child, Prent or Care Provider Info \n6.List All Children   \n7. Generate Performance Report Of Child "
@@ -115,7 +116,7 @@ public class AdminController {
 		adminService.insertParentDetails(parentPOJO,contactPOJO);
 	}
 		
-	private void AddChild() throws SQLException {
+	private void AddChild() throws SQLException, ParseException {
 
 		ChildPOJO childPOJO = new ChildPOJO();
 

@@ -2,9 +2,12 @@ package cdccm.servicesimpl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+
 import cdccm.dbServices.MySQLDBConnector;
 import cdccm.pojo.CareProviderPOJO;
 import cdccm.pojo.ChildPOJO;
+import cdccm.pojo.ChildReportPOJO;
 import cdccm.pojo.ContactPOJO;
 import cdccm.pojo.ParentPOJO;
 import cdccm.serviceApi.AdminService;
@@ -19,8 +22,8 @@ public class AdminServiceImpl implements AdminService {
 		dbConnector = MySQLDBConnector.getInstance();
 	}
 	@Override
-	public void insertChildDetails(ChildPOJO childPOJO) throws SQLException{
-		int age = CdccmUtilities.getAge();
+	public void insertChildDetails(ChildPOJO childPOJO) throws SQLException, ParseException{
+		int age = CdccmUtilities.getAge("jkdckj");
 	
 		// on the basis of age_calculartor utility we can decide age group, no additional query to get fk_age_group
 		int ageGroup = 2;
@@ -101,6 +104,36 @@ public class AdminServiceImpl implements AdminService {
 			e.printStackTrace();
 		}
 
+	}
+	@Override
+	public void assignActivityToChild(int childId) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void assignActivitiesToChildren() throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateChildInfo(int id, ChildPOJO childPOJO) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateParentInfo(int parentID) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateCareProviderInfo(int careProviderID) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public ResultSet displayInfo(int id, String tableName) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
