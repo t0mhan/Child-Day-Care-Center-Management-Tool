@@ -87,5 +87,20 @@ public class AdminServiceImpl implements AdminService {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void generateReport(int childid) {
+		System.out.println("gerenating report for Child " + childid);
+		ResultSet childresult;
+		String sql="select ci.idchild as childId,ci.name as Name,ci.surname as Surname,ci.dob as dateOfBirth, ag.name as ageGroup,a.activity_name  as activityName,(ifnull(r.MON,0)+ifnull(r.TUE,0)+ifnull(r.WEN,0)+ifnull(r.THU,0)+ifnull(r.FRI,0)) as Total,((ifnull(r.MON,0)+ifnull(r.TUE,0)+ifnull(r.WEN,0)+ifnull(r.THU,0)+ifnull(r.FRI,0))*100/500) as Percentagefrom report r join child_info ci join day_session ds join age_group ag join activity aon(r.fk_idchild=ci.idchild and r.fk_idactivity=a.idactivity and ci.fk_age_group=ag.idage_group) where r.fk_idchild=? group by a.activity_name,ci.idchild;";
+		ChildReportPOJO childreport=null;
+		try {
+			ResultSet resultset=dbConnector.getReport(sql,childid);
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+
+	}
 
 }
