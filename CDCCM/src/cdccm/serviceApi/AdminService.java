@@ -20,6 +20,7 @@ public interface AdminService {
 	void selectReport();
 	void selectSchedule();
 	void selectNewsEvents();
+	void generateReport(int childid);
 	ResultSet listAllChild() throws SQLException;
 	ResultSet displayInfo(int id,String tableName) throws SQLException;
 

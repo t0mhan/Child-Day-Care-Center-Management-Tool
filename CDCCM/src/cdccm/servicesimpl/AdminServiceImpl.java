@@ -73,30 +73,6 @@ public class AdminServiceImpl implements AdminService {
 	}
 	
 	@Override
-	public void assignActivitiesToChildren() throws SQLException {
-		int resultCountAssignActivity;
-		ResultSet chilIdList;
-		for(int ageGroup = 1; ageGroup<=3;ageGroup++){
-			chilIdList = dbConnector.query("SELECT idchild,fk_age_group FROM CHILD_INFO where fk_age_group=" +ageGroup);
-			while(chilIdList.next()){
-				resultCountAssignActivity = dbConnector.
-					insert("insert into report(fk_idchild,fk_idagegroup) VALUES(" + chilIdList.getString("IDCHILD")+","+chilIdList.getString("fk_age_group"));
-				if(ageGroup == 1){
-					dbConnector.query("update report set fk_idsession=101 where fk_idagegroup=1 and fk_idsession=0;");
-					dbConnector.query("update report set fk_idsession=102 where fk_idagegroup=1 and fk_idsession=0;");
-					dbConnector.query("update report set fk_idsession=102 where fk_idagegroup=1 and fk_idsession=0;");
-					}
-			}
-		}
-		
-	}
-	@Override
-	public void assignActivityToChild(int childId) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
 	public void selectReport() {
 		// TODO Auto-generated method stub
 		
@@ -112,60 +88,19 @@ public class AdminServiceImpl implements AdminService {
 		
 	}
 	@Override
-	public void updateChildInfo(int id, ChildPOJO childPOJO) throws SQLException {
-		int resultUpdate = 0;
-		String updateQuery = "";
-		updateQuery = "UPDATE CHILD_INFO SET ";
-//		if(childPOJO.getFirst_name() != null){
-//			updateQuery = updateQuery + "name = " + childPOJO.getFirst_name();
-//		}
-//		if(childPOJO.getLast_name() != null){
-//			updateQuery = updateQuery + "surname = " + childPOJO.getLast_name();
-//		}
-//		if(childPOJO.getDob() != null){
-//			updateQuery = updateQuery + "dob = " + childPOJO.getDob();
-//		}
-		updateQuery = updateQuery+"surname = '" + childPOJO.getLast_name()+"',dob = '"+childPOJO.getDob()+"'WHERE idchild = "+id;
-		resultUpdate = dbConnector.insert(updateQuery);
-		if(resultUpdate > 0){
-			System.out.println("Record Updated");
+	public void generateReport(int childid) {
+		System.out.println("gerenating report for Child " + childid);
+		ResultSet childresult;
+		String sql="select ci.idchild as childId,ci.name as Name,ci.surname as Surname,ci.dob as dateOfBirth, ag.name as ageGroup,a.activity_name  as activityName,(ifnull(r.MON,0)+ifnull(r.TUE,0)+ifnull(r.WEN,0)+ifnull(r.THU,0)+ifnull(r.FRI,0)) as Total,((ifnull(r.MON,0)+ifnull(r.TUE,0)+ifnull(r.WEN,0)+ifnull(r.THU,0)+ifnull(r.FRI,0))*100/500) as Percentagefrom report r join child_info ci join day_session ds join age_group ag join activity aon(r.fk_idchild=ci.idchild and r.fk_idactivity=a.idactivity and ci.fk_age_group=ag.idage_group) where r.fk_idchild=? group by a.activity_name,ci.idchild;";
+		ChildReportPOJO childreport=null;
+		try {
+			ResultSet resultset=dbConnector.getReport(sql,childid);
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
 		}
-		else
-			System.out.println("Error Occured, Record Not Updated");
-	}
-	@Override
-	public void updateParentInfo(int parentID) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void updateCareProviderInfo(int careProviderID) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public ResultSet displayInfo(int id,String tableName) throws SQLException {
-		ResultSet resultSet = null;
-		if(tableName=="CHILD_INFO"){
-			resultSet = dbConnector.query("SELECT * FROM CHILD_INFO WHERE IDCHILD ="+id);
-			if(resultSet.next()){
-				System.out.println("Child ID: "+ resultSet.getString("idchild"));
-				System.out.println("First Name: "+ resultSet.getString("name"));
-				System.out.println("Last Name: "+ resultSet.getString("surname"));
-				System.out.println("Date Of Birth: "+ resultSet.getString("dob"));
-				System.out.println("Age:"+ resultSet.getString("age"));
-				}
-		}
-		if(tableName=="PARENT"){
-			resultSet = dbConnector.query("SELECT * FROM CHILD_INFO WHERE idCHILD ="+id);
-		}
-		if(tableName=="CARE_PROVIDER"){
-			resultSet = dbConnector.query("SELECT * FROM CHILD_INFO WHERE idCHILD ="+id);
-		}
-		return resultSet;
-		
-	}
 
-
+	}
 
 }
