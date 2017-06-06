@@ -2,17 +2,20 @@ package cdccm.serviceApi;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 
+import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
 import cdccm.pojo.ChildPOJO;
 import cdccm.pojo.ContactPOJO;
 import cdccm.pojo.ParentPOJO;
 
 public interface AdminService {
-	void insertChildDetails(ChildPOJO childPOJO) throws SQLException;
+	void insertChildDetails(ChildPOJO childPOJO) throws SQLException, ParseException;
 	void insertParentDetails(ParentPOJO parentPOJO, ContactPOJO contactPOJO) throws SQLException;
 	void insertCareProvider(CareProviderPOJO careProviderPOJO);
-	void assignActivityToChild(int childId) throws SQLException;
+	void assignActivityToChild(AssignActivityPOJO assignActivityPOJO) throws SQLException;
+	void updateActivityToChild(AssignActivityPOJO assignActivityPOJO) throws SQLException;
 	void assignActivitiesToChildren() throws SQLException;
 	void updateChildInfo(int id, ChildPOJO childPOJO) throws SQLException;
 	void updateParentInfo(int parentID);

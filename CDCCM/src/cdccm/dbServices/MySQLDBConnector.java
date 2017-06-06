@@ -2,6 +2,7 @@ package cdccm.dbServices;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,6 +10,7 @@ import java.sql.Statement;
 public class MySQLDBConnector {
 	public Connection conn;
 	private Statement resultStatement;
+	private PreparedStatement preparedstatement;
 	private static MySQLDBConnector dbConnectorObj;
 	
 	private MySQLDBConnector() {
@@ -49,10 +51,12 @@ public class MySQLDBConnector {
 		int resultCount = resultStatement.executeUpdate(deleteQuery);
 		return resultCount;
 	}
+	
+	
 	public ResultSet getReport(String sql, int childid) throws SQLException {
 		preparedstatement=conn.prepareStatement(sql);
 		preparedstatement.setInt(1,childid);
 		ResultSet res=preparedstatement.executeQuery();
 		return res;
-
+	}
 }

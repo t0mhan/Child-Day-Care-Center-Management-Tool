@@ -1,5 +1,10 @@
 package cdccm.serviceApi;
 
-public interface CareProviderService {
+import java.sql.SQLException;
+import java.text.ParseException;
 
+import cdccm.pojo.AssignActivityPOJO;
+
+public interface CareProviderService {
+	void ChildPerformance(AssignActivityPOJO updatePerformance) throws SQLException, ParseException;
 }

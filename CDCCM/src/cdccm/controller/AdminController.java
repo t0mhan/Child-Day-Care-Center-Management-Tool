@@ -2,8 +2,12 @@ package cdccm.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
 
+import org.eclipse.jdt.internal.compiler.ast.Assignment;
+
+import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
 import cdccm.pojo.ChildPOJO;
 import cdccm.pojo.ContactPOJO;
@@ -22,17 +26,17 @@ public class AdminController {
 		adminService = new AdminServiceImpl();
 	}
 	
-	public void startOperations() throws SQLException{
+	public void startOperations() throws SQLException, ParseException{
 		do{
-			System.out.println("User Logged In As Admin. \nNow Select An Operation To Perform");
-			System.out.println("1. Register A Child \n2. Register Care Provider \n3.Register Activity To All Children \n4.Register Activity For A Single Child \n5.Update Child, Prent or Care Provider Info \n6.List All Children   \n7. Generate Performance Report Of Child "
+			System.out.println("User Logged In As Admin \nNow Select An Operation To Perform");
+			System.out.println("1. Register A Child \n2. Register Care Provider \n3.Register Activity To All Children \n4.Register An Activity For A Child \n5.Update Child, Prent or Care Provider Info \n6.List All Children   \n7. Generate Performance Report Of Child "
 					+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child   \n11. Main Menu.");
 			int choice = 0;
 			choice = Integer.parseInt(inputScanner.nextLine());
 			switch(choice){
 			case 1://done
 				try {
-					AddParent();
+					AddParent();//
 					AddChild();
 				
 					boolean addChildFlag = true;
@@ -78,7 +82,7 @@ public class AdminController {
 				SendNewsEvents();
 				break;
 			case 10:
-				
+				UpdateChildActivity();
 				break;
 			case 11:
 				choiceFlag = false;
@@ -115,7 +119,7 @@ public class AdminController {
 		adminService.insertParentDetails(parentPOJO,contactPOJO);
 	}
 		
-	private void AddChild() throws SQLException {
+	private void AddChild() throws SQLException, ParseException {
 
 		ChildPOJO childPOJO = new ChildPOJO();
 
@@ -162,15 +166,56 @@ public class AdminController {
 		System.out.println("");
 	}
 
+	private void AddActivityToChild() throws SQLException{
+		boolean moreEntry = true;
+		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
+		
+		System.out.println("Enter Child ID To Assign Activity and Care Provider");
+		assignActivityPOJO.setActivityID(inputScanner.nextInt());
+		System.out.println("Enter Child's AgeGroup");
+		assignActivityPOJO.setAgeGroup(inputScanner.nextInt());
+		do{
+			
+			System.out.println("Enter The Session (For Morning 1, For Afternoon 2, For Evening 3)");
+			assignActivityPOJO.setSession(inputScanner.nextInt());
+				adminService.assignActivityToChild(assignActivityPOJO);
+				
+				System.out.println("Do You Want To Assign more Activity? Press Yes");
+				String choice = inputScanner.nextLine().toUpperCase();
+				if(choice !="YES"){
+					moreEntry = false;
+				}
+		}while(moreEntry);
+
+	}
+	
+	private void UpdateChildActivity() throws SQLException {
+		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
+		boolean moreEntry = true;
+		
+		System.out.println("\nEnter Child ID To Update Activity ");
+		assignActivityPOJO.setChildID(inputScanner.nextInt());
+		System.out.println("Enter Child's AgeGroup");
+		assignActivityPOJO.setAgeGroup(inputScanner.nextInt());
+		do{
+			System.out.println("Select For Which Session You Want To Update (Select 1 For Morning 2 For Afternoon 3 For Evening)");
+			assignActivityPOJO.setSession(inputScanner.nextInt());
+			adminService.updateActivityToChild(assignActivityPOJO);
+			
+			System.out.println("Do You Want To Update More Activity? Press Yes");
+			String choice = inputScanner.nextLine().toUpperCase();
+			if(choice =="YES"){
+				//UpdateChildActivity();
+			}
+			else{
+				moreEntry = false;
+			}
+		}while(moreEntry);
+	}
+	
 	private void SendNewsEvents() {
 		// TODO Auto-generated method stub
 	}
-
-	
-	private void AddActivityToChild(){
-		
-	}
-	
 	private void AddActivitiesToAllChildren() throws SQLException{
 		System.out.println("Welcome To Assiging All Children Acivities Based On Their Age Group");
 		adminService.assignActivitiesToChildren();

@@ -1,11 +1,14 @@
 package cdccm.mainApp;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
+
+import org.springframework.beans.CachedIntrospectionResults;
 
 import cdccm.controller.AdminController;
 import cdccm.controller.CareProviderController;
 public class DayCareMgtAppRunner {
-	public static void main(String[] args) throws SQLException{
+	public static void main(String[] args) throws SQLException, ParseException{
 		boolean choiceFlag = true;
 		Scanner inputChoice = new Scanner(System.in);
 		System.out.println("++++++++++ Welcome To Day Care Center Management Application +++++++++");
@@ -19,6 +22,8 @@ public class DayCareMgtAppRunner {
 				adminCtrl.startOperations();
 				break;
 			case 2:
+				CareProviderController careCtrl = new CareProviderController();
+				careCtrl.startOperations();
 				break;
 			case 3:
 				choiceFlag = false;
@@ -31,7 +36,6 @@ public class DayCareMgtAppRunner {
 		}while(choiceFlag);
 		inputChoice.close();
 		System.out.println("Thank You, We Are Done For The Day!");
-		
 	}
 
 }
