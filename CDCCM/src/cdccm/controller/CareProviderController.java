@@ -22,8 +22,7 @@ public class CareProviderController {
 		do {
 			System.out.println(
 					"User Logged In As Care Provider \nNow Select An Operation To Perform \n1. Enter Performance OF Child \n2. Main Menu ");
-			int choice = 0;
-			choice = Integer.parseInt(inputScanner.nextLine());
+			int choice = Integer.parseInt(inputScanner.nextLine());
 			switch (choice) {
 			case 1:
 				ChildPerformance();

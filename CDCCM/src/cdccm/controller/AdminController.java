@@ -29,8 +29,8 @@ public class AdminController {
 	public void startOperations() throws SQLException, ParseException{
 		do{
 			System.out.println("User Logged In As Admin \nNow Select An Operation To Perform");
-			System.out.println("1. Register A Child \n2. Register Care Provider \n3.Register Activity To All Children \n4.Register An Activity For A Child \n5.Update Child, Prent or Care Provider Info \n6.List All Children   \n7. Generate Performance Report Of Child "
-					+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child   \n11. Main Menu.");
+			System.out.println("1. Register A Child \n2. Register Care Provider \n3. Register Activity To All Children \n4. Register An Activity For A Child \n5. Update Child, Prent or Care Provider Info \n6. List All Children   \n7. Generate Performance Report Of Child "
+					+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child\n10.Update Activity and Care Provider \n11.Provide Rating to Care Provider \n11.Main Menu.");
 			int choice = 0;
 			choice = Integer.parseInt(inputScanner.nextLine());
 			switch(choice){
@@ -111,7 +111,7 @@ public class AdminController {
 		System.out.println("Enter The City: ");
 		contactPOJO.setCity(inputScanner.nextLine());
 		System.out.println("Enter The Pincode: ");
-		contactPOJO.setPincode(inputScanner.nextInt());
+		contactPOJO.setPincode(Integer.parseInt(inputScanner.nextLine()));
 		System.out.println("Enter The Email: ");
 		contactPOJO.setEmail(inputScanner.nextLine());
 		System.out.println("Enter The Phone Number: ");
@@ -122,7 +122,6 @@ public class AdminController {
 	private void AddChild() throws SQLException, ParseException {
 
 		ChildPOJO childPOJO = new ChildPOJO();
-
 		System.out.println("++++++++++ Please Enter Details Of Child ++++++++++\n ");
 		System.out.println("Enter The First Name: ");
 		childPOJO.setFirst_name(inputScanner.nextLine());
@@ -205,7 +204,7 @@ public class AdminController {
 			System.out.println("Do You Want To Update More Activity? Press Yes");
 			String choice = inputScanner.nextLine().toUpperCase();
 			if(choice =="YES"){
-				//UpdateChildActivity();
+				
 			}
 			else{
 				moreEntry = false;
@@ -253,8 +252,7 @@ public class AdminController {
 	private void UpdateCareProviderInfo() throws SQLException {
 		System.out.println("Enter Care Provider ID To Update Data");
 		int id = inputScanner.nextInt();
-        
-		
+        	
 	}
 
 	private void UpdateParentInfo() throws SQLException {
