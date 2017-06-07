@@ -213,9 +213,11 @@ public class AdminServiceImpl implements AdminService {
 		int resultUpdate = 0;
 
 		String updateQuery = "UPDATE CARE_PROVIDER SET ";
-
+		updateQuery = updateQuery + "name = '" + careProviderPOJO.getName() + "' , emailid = '"
+				+ careProviderPOJO.getEmail() + "', phone_number = '" + careProviderPOJO.getPhoneNumber() + "' WHERE idcare_provider = "+careProviderId;
+		resultUpdate = dbConnector.insert(updateQuery);
 		if (resultUpdate > 0) {
-			System.out.println("Care Provider Updated!!\n");
+			System.out.println("Care Provider Record Updated!!\n");
 		} else
 			System.out.println("Error Occured, Record Not Updated");
 
@@ -251,15 +253,15 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public ResultSet displayInfo(int id, String tableName) throws SQLException {
+	public boolean displayInfo(int id, String tableName) throws SQLException {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override
-	public ResultSet displayChild(int id) throws SQLException {
+	public boolean displayChild(int id) throws SQLException {
 		ResultSet resultSetChild = null;
-
+		boolean recordExists = false;
 		resultSetChild = dbConnector.query("SELECT * FROM CHILD_INFO WHERE IDCHILD = " + id);
 		if (resultSetChild.next()) {
 			System.out.println("Child ID: " + resultSetChild.getString("idchild"));
@@ -268,24 +270,28 @@ public class AdminServiceImpl implements AdminService {
 			System.out.println("Date Of Birth: " + resultSetChild.getString("dob"));
 			System.out.println("Age:" + resultSetChild.getString("age"));
 			System.out.println("Age:" + resultSetChild.getString("fk_age_group"));
+			recordExists = true;
 		}
-		return resultSetChild;
+		return recordExists;
 	}
 
 	@Override
-	public ResultSet displayParent(int id) throws SQLException {
+	public boolean displayParent(int id) throws SQLException {
 
+		boolean recordExists = false;
 		ResultSet resultSetParent = dbConnector.query("SELECT * FROM PARENT WHERE IDPARENT = " + id);
 
 		if (resultSetParent.next()) {
 			System.out.println("Parent First Name: " + resultSetParent.getString("name"));
 			System.out.println("Parent Last Name: " + resultSetParent.getString("surname"));
+			recordExists = true;
 		}
-		return resultSetParent;
+		return recordExists;
 	}
 
 	@Override
-	public ResultSet displayContact(int id) throws SQLException {
+	public boolean displayContact(int id) throws SQLException {
+		boolean recordExists = false;
 		ResultSet resultSetContact = dbConnector.query("SELECT * FROM CONTACT WHERE FK_IDPARENT = " + id);
 		if (resultSetContact.next()) {
 			System.out.println("Street Name: " + resultSetContact.getString("street"));
@@ -293,21 +299,24 @@ public class AdminServiceImpl implements AdminService {
 			System.out.println("Pincode: " + resultSetContact.getString("pincode"));
 			System.out.println("Phone Number: " + resultSetContact.getString("phone_number"));
 			System.out.println("Email Id: " + resultSetContact.getString("emailid"));
+			recordExists = true;
 		}
-	return resultSetContact;
+		return recordExists;
 	}
 
 	@Override
-	public ResultSet displayCareProvider(int id) throws SQLException {
+	public boolean displayCareProvider(int id) throws SQLException {
 
+		boolean recordExists = false;
 		ResultSet resultSetProvider = dbConnector.query("SELECT * FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = " + id);
 		if (resultSetProvider.next()) {
-			System.out.println("Child ID: " + resultSetProvider.getString("idcare_provider"));
-			System.out.println("First Name: " + resultSetProvider.getString("name"));
-			System.out.println("Last Name: " + resultSetProvider.getString("email"));
-			System.out.println("Date Of Birth: " + resultSetProvider.getString("phone_number"));
+			System.out.println("Care Provider ID: " + resultSetProvider.getString("idcare_provider"));
+			System.out.println("Name: " + resultSetProvider.getString("name"));
+			System.out.println("Email Id: " + resultSetProvider.getString("emailid"));
+			System.out.println("Phone number: " + resultSetProvider.getString("phone_number"));
+			recordExists = true;
 		}
-		return null;
+		return recordExists;
 	}
 
 }

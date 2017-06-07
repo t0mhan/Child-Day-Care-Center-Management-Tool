@@ -41,14 +41,14 @@ public interface AdminService {
 
 	ResultSet listAllChild() throws SQLException;
 
-	ResultSet displayInfo(int id, String tableName) throws SQLException;
+	boolean displayInfo(int id, String tableName) throws SQLException;
 
-	ResultSet displayChild(int id) throws SQLException;
+	boolean displayChild(int id) throws SQLException;
 
-	ResultSet displayParent(int id) throws SQLException;
+	boolean displayParent(int id) throws SQLException;
 
-	ResultSet displayContact(int id) throws SQLException;
+	boolean displayContact(int id) throws SQLException;
 
-	ResultSet displayCareProvider(int id) throws SQLException;
+	boolean displayCareProvider(int id) throws SQLException;
 
 }

@@ -26,8 +26,9 @@ public class AdminController {
 	}
 
 	public void startOperations() throws Exception {
+		System.out.println("User Logged In As Admin \n");
 		do {
-			System.out.println("User Logged In As Admin \nNow Select An Operation To Perform");
+			System.out.println("User Entered As Admin \nNow Select An Operation To Perform");
 			System.out.println(
 					"1. Register A Child \n2. Register Care Provider \n3. Add Activity To All Children \n4. Add Activity For A Child \n5. Update Child, Prent or Care Provider Info \n6. List All Children   \n7. Update Activity and Care Provider "
 							+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child\n10.Generate Performance Report Of Child \n11.Provide Feedback  Of Care Provider \n11.Main Menu.");
@@ -237,10 +238,11 @@ public class AdminController {
 		boolean choiceFlag = true;
 		int choice = 0;
 		System.out.println("Welcome To Update Registration Information");
-		System.out.println(
-				"Now Select An Operation To Perform\n1. Update Child Information \n2. Update Parent Information \n3. Update Care Provider Information \n4. Exit Update Process ");
-		choice = Integer.parseInt(inputScanner.nextLine());
+
 		do {
+			System.out.println(
+					"\nNow Select An Operation To Perform\n1. Update Child Information \n2. Update Parent Information \n3. Update Care Provider Information \n4. Exit Update Process ");
+			choice = Integer.parseInt(inputScanner.nextLine());
 			switch (choice) {
 
 			case 1:
@@ -258,13 +260,32 @@ public class AdminController {
 			default:
 				System.out.println("Wrong Choice");
 			}
-		}while (choiceFlag);
+		} while (choiceFlag);
 	}
 
 	private void UpdateCareProviderInfo() throws SQLException {
+		
+		CareProviderPOJO careProviderPOJO = new CareProviderPOJO();
 		System.out.println("Enter Care Provider ID To Update Data");
-		int id = inputScanner.nextInt();
-
+		int careProviderID = (Integer.parseInt(inputScanner.nextLine()));
+		boolean showProvider = adminService.displayCareProvider(careProviderID);
+		if (showProvider) {
+			System.out.println("Enter The Complete Name: ");
+			careProviderPOJO.setName(inputScanner.nextLine());
+			System.out.println("Enter The Email: ");
+			String emailString = inputScanner.nextLine();
+			EmailValidator email = new EmailValidator();
+			boolean isEmail = (email.validate(emailString));
+			if (isEmail == true) {
+				careProviderPOJO.setEmail(emailString);
+			} else
+				System.out.println("Not Valid Email Id");
+			System.out.println("Enter The Phone Number: ");
+			careProviderPOJO.setPhoneNumber(inputScanner.nextLine());
+			adminService.updateCareProviderInfo(careProviderID, careProviderPOJO);
+		} else {
+			System.out.println("No Record Found !!");
+		}
 	}
 
 	private void UpdateParentInfo() throws SQLException {
@@ -272,10 +293,10 @@ public class AdminController {
 		ContactPOJO contactPOJO = new ContactPOJO();
 		System.out.println("Enter Parent ID To Update Data");
 		int parentID = (Integer.parseInt(inputScanner.nextLine()));
-		ResultSet showParent = adminService.displayParent(parentID);
+		boolean showParent = adminService.displayParent(parentID);
 		adminService.displayContact(parentID);
 		System.out.println("");
-		if (showParent.next()) {
+		if (showParent) {
 			System.out.println("Enter The First Name: ");
 			parentPOJO.setParentFirst_name(inputScanner.nextLine());
 			System.out.println("Enter The Last Name: ");
@@ -298,8 +319,7 @@ public class AdminController {
 				System.out.println("Not Valid Email Id");
 			adminService.updateParentInfo(parentID, parentPOJO);
 			adminService.updateContactInfo(parentID, contactPOJO);
-		} 
-		else {
+		} else {
 			System.out.println("No Record Found !!");
 		}
 	}
@@ -308,8 +328,8 @@ public class AdminController {
 		System.out.println("Enter Child ID To Update Data");
 		int id = (Integer.parseInt(inputScanner.nextLine()));
 		ChildPOJO childPOJO = new ChildPOJO();
-		ResultSet showChild = adminService.displayChild(id);
-		if (showChild.next()) {
+		boolean showChild = adminService.displayChild(id);
+		if (showChild) {
 			System.out.println("++++++++++ To Update the Data Please Enter Details Of Child ++++++++++\n ");
 			System.out.println("Enter The First Name: ");
 			childPOJO.setFirst_name(inputScanner.nextLine());
@@ -318,10 +338,8 @@ public class AdminController {
 			System.out.println("Enter The Date Of Birth in format (yyyy-mm-dd): ");
 			childPOJO.setDob(inputScanner.nextLine());
 			adminService.updateChildInfo(id, childPOJO);
-		}
-		else {
+		} else
 			System.out.println("No Record Found !!");
-		}
 	}
 
 	private void GenerateReport() {

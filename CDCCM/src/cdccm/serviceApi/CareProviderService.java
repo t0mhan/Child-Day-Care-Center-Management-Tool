@@ -7,4 +7,5 @@ import cdccm.pojo.AssignActivityPOJO;
 
 public interface CareProviderService {
 	void ChildPerformance(AssignActivityPOJO updatePerformance) throws SQLException, ParseException;
+	boolean displayChild(int id) throws SQLException;
 }
