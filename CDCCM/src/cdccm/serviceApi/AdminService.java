@@ -30,6 +30,7 @@ public interface AdminService {
 	void updateContactInfo(int parentID, ContactPOJO contactPOJO) throws SQLException;
 
 	void updateCareProviderInfo(int careProviderID, CareProviderPOJO careProviderPOJO) throws SQLException;
+	void provideFeedback(int careProviderID, CareProviderPOJO careProviderPOJO) throws SQLException;
 
 	void selectReport();
 

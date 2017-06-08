@@ -214,7 +214,8 @@ public class AdminServiceImpl implements AdminService {
 
 		String updateQuery = "UPDATE CARE_PROVIDER SET ";
 		updateQuery = updateQuery + "name = '" + careProviderPOJO.getName() + "' , emailid = '"
-				+ careProviderPOJO.getEmail() + "', phone_number = '" + careProviderPOJO.getPhoneNumber() + "' WHERE idcare_provider = "+careProviderId;
+				+ careProviderPOJO.getEmail() + "', phone_number = '" + careProviderPOJO.getPhoneNumber()
+				+ "' WHERE idcare_provider = " + careProviderId;
 		resultUpdate = dbConnector.insert(updateQuery);
 		if (resultUpdate > 0) {
 			System.out.println("Care Provider Record Updated!!\n");
@@ -317,6 +318,18 @@ public class AdminServiceImpl implements AdminService {
 			recordExists = true;
 		}
 		return recordExists;
+	}
+
+	@Override
+	public void provideFeedback(int careProviderID, CareProviderPOJO careProviderPOJO) throws SQLException {
+		int feedback = dbConnector
+				.insert("UPDATE CARE_PROVIDER SET PARENT_FEEDBACK = ' " + careProviderPOJO.getSuggestions() + "' WHERE IDCARE_PROVIDER = "+careProviderID);
+		if (feedback > 0) {
+			System.out.println("Suggestions/Feedback Added Succesfully!!\n");
+		} else {
+			System.out.println("Suggestion/Feedback Not Added\n");
+		}
+
 	}
 
 }

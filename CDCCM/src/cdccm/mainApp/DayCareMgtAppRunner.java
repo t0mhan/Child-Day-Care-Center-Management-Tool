@@ -1,10 +1,6 @@
 package cdccm.mainApp;
 
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Scanner;
-
-import org.springframework.beans.CachedIntrospectionResults;
 
 import cdccm.controller.AdminController;
 import cdccm.controller.CareProviderController;
@@ -25,7 +21,7 @@ public class DayCareMgtAppRunner {
 				adminCtrl.startOperations();
 				break;
 			case 2:
-				CareProviderController careCtrl = new CareProviderController();
+				CareProviderController careCtrl = new CareProviderController(inputChoice);
 				careCtrl.startOperations();
 				break;
 			case 3:

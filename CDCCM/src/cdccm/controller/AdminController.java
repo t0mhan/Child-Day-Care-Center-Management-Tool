@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Scanner;
 
+import org.jfree.chart.imagemap.ImageMapUtilities;
+
 import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
 import cdccm.pojo.ChildPOJO;
@@ -26,12 +28,12 @@ public class AdminController {
 	}
 
 	public void startOperations() throws Exception {
-		System.out.println("User Logged In As Admin \n");
+		System.out.println("User Entered As Admin \n");
 		do {
-			System.out.println("User Entered As Admin \nNow Select An Operation To Perform");
+			System.out.println("Please Select An Operation To Perform");
 			System.out.println(
 					"1. Register A Child \n2. Register Care Provider \n3. Add Activity To All Children \n4. Add Activity For A Child \n5. Update Child, Prent or Care Provider Info \n6. List All Children   \n7. Update Activity and Care Provider "
-							+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child\n10.Generate Performance Report Of Child \n11.Provide Feedback  Of Care Provider \n11.Main Menu.");
+							+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child\n10.Generate Performance Report Of Child \n11.Provide Feedback  Of Care Provider \n12.Main Menu.");
 			int choice = 0;
 			choice = Integer.parseInt(inputScanner.nextLine());
 			switch (choice) {
@@ -63,10 +65,10 @@ public class AdminController {
 			case 3:
 				AddActivitiesToAllChildren();
 				break;
-			case 4:
+			case 4://done
 				AddActivityToChild();
 				break;
-			case 5:
+			case 5://done
 				UpdateRegistrationInfo();
 				break;
 			case 6:// done
@@ -84,7 +86,10 @@ public class AdminController {
 			case 10:
 				GenerateReport();
 				break;
-			case 11:
+			case 11://done
+				ProvideFeedback();
+				break;
+			case 12:
 				choiceFlag = false;
 				break;
 			default:
@@ -349,6 +354,20 @@ public class AdminController {
 	private void GenerateSchedule() {
 		// TODO Auto-generated method stub
 
+	}
+	private void ProvideFeedback() throws SQLException{
+		System.out.println("Enter Care Provider ID To Add Feedback/Suggestions");
+		CareProviderPOJO careProviderPOJO = new CareProviderPOJO();
+		int careProviderId = (Integer.parseInt(inputScanner.nextLine()));
+		boolean careProviderExists = adminService.displayCareProvider(careProviderId);
+		if(careProviderExists){
+			System.out.println("Please Enter Feedback/Suggestions For Care Provider");
+			careProviderPOJO.setSuggestions(inputScanner.nextLine());
+			adminService.provideFeedback(careProviderId,careProviderPOJO );
+		}else{
+			System.out.println("No Record Found !!");
+		}
+		
 	}
 
 }

@@ -6,6 +6,6 @@ import java.text.ParseException;
 import cdccm.pojo.AssignActivityPOJO;
 
 public interface CareProviderService {
-	void ChildPerformance(AssignActivityPOJO updatePerformance) throws SQLException, ParseException;
-	boolean displayChild(int id) throws SQLException;
+	void childPerformance(AssignActivityPOJO updatePerformance) throws SQLException, ParseException;
+	boolean displayChild(AssignActivityPOJO updatePerformance) throws SQLException;
 }
