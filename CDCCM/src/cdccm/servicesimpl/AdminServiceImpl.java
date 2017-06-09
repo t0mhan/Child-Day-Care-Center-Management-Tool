@@ -11,6 +11,7 @@ import cdccm.pojo.CareProviderPOJO;
 import cdccm.pojo.ChildPOJO;
 import cdccm.pojo.ContactPOJO;
 import cdccm.pojo.ParentPOJO;
+import cdccm.pojo.ProviderFeedbackPOJO;
 import cdccm.serviceApi.AdminService;
 import cdccm.utilities.CdccmUtilities;
 
@@ -321,15 +322,15 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public void provideFeedback(int careProviderID, CareProviderPOJO careProviderPOJO) throws SQLException {
+	public void provideFeedback(ProviderFeedbackPOJO providerFeedbackPOJO) throws SQLException {
 		int feedback = dbConnector
-				.insert("UPDATE CARE_PROVIDER SET PARENT_FEEDBACK = ' " + careProviderPOJO.getSuggestions() + "' WHERE IDCARE_PROVIDER = "+careProviderID);
+				.insert("INSERT INTO FEEDBACK(FK_IDPARENT,FK_IDCARE_PROVIDER,PARENT_FEEDBACK) VALUES('"
+						+ providerFeedbackPOJO.getCareProviderId() + "','" + providerFeedbackPOJO.getParentId() + "','"
+						+ providerFeedbackPOJO.getFeedback() + "')");
 		if (feedback > 0) {
 			System.out.println("Suggestions/Feedback Added Succesfully!!\n");
 		} else {
 			System.out.println("Suggestion/Feedback Not Added\n");
 		}
-
 	}
-
 }

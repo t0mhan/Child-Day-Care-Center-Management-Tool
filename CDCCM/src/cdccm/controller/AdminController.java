@@ -12,6 +12,7 @@ import cdccm.pojo.CareProviderPOJO;
 import cdccm.pojo.ChildPOJO;
 import cdccm.pojo.ContactPOJO;
 import cdccm.pojo.ParentPOJO;
+import cdccm.pojo.ProviderFeedbackPOJO;
 import cdccm.serviceApi.AdminService;
 import cdccm.servicesimpl.AdminServiceImpl;
 import cdccm.utilities.EmailValidator;;
@@ -356,14 +357,17 @@ public class AdminController {
 
 	}
 	private void ProvideFeedback() throws SQLException{
+		
+		ProviderFeedbackPOJO providerFeedbackPOJO = new ProviderFeedbackPOJO();	
+		System.out.println("Enter Parent ID");
+		providerFeedbackPOJO.setParentId(Integer.parseInt(inputScanner.nextLine()));
 		System.out.println("Enter Care Provider ID To Add Feedback/Suggestions");
-		CareProviderPOJO careProviderPOJO = new CareProviderPOJO();
-		int careProviderId = (Integer.parseInt(inputScanner.nextLine()));
-		boolean careProviderExists = adminService.displayCareProvider(careProviderId);
+		providerFeedbackPOJO.setCareProviderId(Integer.parseInt(inputScanner.nextLine()));
+		boolean careProviderExists = adminService.displayCareProvider(providerFeedbackPOJO.getCareProviderId());
 		if(careProviderExists){
 			System.out.println("Please Enter Feedback/Suggestions For Care Provider");
-			careProviderPOJO.setSuggestions(inputScanner.nextLine());
-			adminService.provideFeedback(careProviderId,careProviderPOJO );
+			providerFeedbackPOJO.setFeedback(inputScanner.nextLine());
+			adminService.provideFeedback(providerFeedbackPOJO );
 		}else{
 			System.out.println("No Record Found !!");
 		}
