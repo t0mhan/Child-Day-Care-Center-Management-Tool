@@ -19,37 +19,45 @@ public class CareProviderImpl implements CareProviderService {
 	}
 
 	@Override
-	public void childPerformance(AssignActivityPOJO updatePerformance) throws SQLException, ParseException {
+	public void childPerformance(AssignActivityPOJO updatePerformance) {
 		int resultUpdate = 0;
-		String updateQuery = "UPDATE REPORT SET CARE_PROVIDER_FEEDBACK = ' " + updatePerformance.getFeedback()
-				+ "' WHERE FK_IDCHILD = " + updatePerformance.getChildID() + " AND FK_IDSESSION = "
-				+ updatePerformance.getSession();
-		resultUpdate = dbConnector.insert(updateQuery);
-		if (resultUpdate > 0) {
-			System.out.println("Child Feedback Updated!!\n");
-		} else
-			System.out.println("Error Occured, Record Not Updated");
+		try {
+			String updateQuery = "UPDATE REPORT SET CARE_PROVIDER_FEEDBACK = ' " + updatePerformance.getFeedback()
+					+ "' WHERE FK_IDCHILD = " + updatePerformance.getChildID() + " AND FK_IDSESSION = "
+					+ updatePerformance.getSession();
+			resultUpdate = dbConnector.insert(updateQuery);
+			if (resultUpdate > 0) {
+				System.out.println("Child Feedback Updated!!\n");
+			} else
+				System.out.println("Error Occured, Record Not Updated");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public boolean displayChild(AssignActivityPOJO updatePerformance) throws SQLException {
+	public boolean displayChild(AssignActivityPOJO updatePerformance) {
 		boolean recordExists = false;
-		ResultSet resultSetParent = dbConnector
-				.query("SELECT * FROM REPORT WHERE fk_idchild = " + updatePerformance.getChildID());
+		try {
+			ResultSet resultSetParent = dbConnector
+					.query("SELECT * FROM REPORT WHERE fk_idchild = " + updatePerformance.getChildID());
 
-		while (resultSetParent.next()) {
-			System.out.println("Session : " + resultSetParent.getString("fk_idsession"));
-			System.out.println("Activity ID : " + resultSetParent.getString("FK_IDACTIVITY"));
-			updatePerformance.setActivityID(resultSetParent.getInt("FK_IDACTIVITY"));
-			ResultSet activityResuult = dbConnector
-					.query("SELECT ACTIVITY_NAME, ACTIVITY_DESCRIPTION FROM ACTIVITY WHERE IDACTIVITY = "
-							+ updatePerformance.getActivityID());
-			while (activityResuult.next()) {
-				System.out.println("Activity Name: " + activityResuult.getString("ACTIVITY_NAME"));
-				System.out.println("Activity Description: " + activityResuult.getString("ACTIVITY_DESCRIPTION"));
-				System.out.println("");
+			while (resultSetParent.next()) {
+				System.out.println("Session : " + resultSetParent.getString("fk_idsession"));
+				System.out.println("Activity ID : " + resultSetParent.getString("FK_IDACTIVITY"));
+				updatePerformance.setActivityID(resultSetParent.getInt("FK_IDACTIVITY"));
+				ResultSet activityResuult = dbConnector
+						.query("SELECT ACTIVITY_NAME, ACTIVITY_DESCRIPTION FROM ACTIVITY WHERE IDACTIVITY = "
+								+ updatePerformance.getActivityID());
+				while (activityResuult.next()) {
+					System.out.println("Activity Name: " + activityResuult.getString("ACTIVITY_NAME"));
+					System.out.println("Activity Description: " + activityResuult.getString("ACTIVITY_DESCRIPTION"));
+					System.out.println("");
+				}
+				recordExists = true;
 			}
-			recordExists = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return recordExists;
 	}

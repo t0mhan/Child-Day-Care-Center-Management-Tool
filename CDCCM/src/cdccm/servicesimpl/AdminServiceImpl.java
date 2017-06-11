@@ -187,8 +187,10 @@ public class AdminServiceImpl implements AdminService {
 
 		int recordInsert;
 		try {
-			ResultSet resultSet = dbConnector.query("select * from activity where fk_age_group ="
-					+ assignActivityPOJO.getAgeGroup() + " AND fk_session = " + assignActivityPOJO.getSession());
+			ResultSet resultSet = dbConnector
+					.query("select idactivity,activity_name, fk_idcareprovider,activity_description from activity where fk_age_group ="
+							+ assignActivityPOJO.getAgeGroup() + " AND fk_session = "
+							+ assignActivityPOJO.getSession());
 			System.out.println("\n------------Activities and Care Provider Available For Child----------\n");
 			while (resultSet.next()) {
 				System.out.println("Activity ID: " + resultSet.getInt("idactivity"));

@@ -135,13 +135,11 @@ public class AdminController {
 		System.out.println("Enter The Date Of Birth in format (yyyy-mm-dd): ");
 		childPOJO.setDob(inputScanner.nextLine());
 		adminService.insertChildDetails(childPOJO);
-
 	}
 
 	private void AddCareProvider() {
 
 		CareProviderPOJO careProviderPOJO = new CareProviderPOJO();
-
 		System.out.println(
 				"++++++++++ Welcome To Care Provider Registration Portal, Please Enter Details Of Care Provider ++++++++++\n");
 		System.out.println("Enter The Complete Name: ");

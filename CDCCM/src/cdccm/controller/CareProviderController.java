@@ -1,7 +1,5 @@
 package cdccm.controller;
 
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Scanner;
 
 import cdccm.pojo.AssignActivityPOJO;
@@ -18,7 +16,7 @@ public class CareProviderController {
 		providerService = new CareProviderImpl();
 	}
 
-	public void startOperations() throws SQLException, ParseException {
+	public void startOperations() {
 		System.out.println("User Entered In As Care Provider \n");
 		do {
 
@@ -39,7 +37,7 @@ public class CareProviderController {
 		} while (choiceFlag);
 	}
 
-	private void ChildPerformance() throws SQLException, ParseException {
+	private void ChildPerformance() {
 		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
 		System.out.println("Please Enter Child's ID To Give Permormance Details ");
 		assignActivityPOJO.setChildID(Integer.parseInt(inputScanner.nextLine()));
