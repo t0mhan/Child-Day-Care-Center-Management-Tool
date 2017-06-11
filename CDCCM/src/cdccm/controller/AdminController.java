@@ -66,16 +66,16 @@ public class AdminController {
 			case 3:
 				AddActivitiesToAllChildren();
 				break;
-			case 4://done
+			case 4:// done
 				AddActivityToChild();
 				break;
-			case 5://done
+			case 5:// done
 				UpdateRegistrationInfo();
 				break;
 			case 6:// done
 				ShowAllChildren();
 				break;
-			case 7:
+			case 7://done
 				UpdateChildActivity();
 				break;
 			case 8:
@@ -87,7 +87,7 @@ public class AdminController {
 			case 10:
 				GenerateReport();
 				break;
-			case 11://done
+			case 11:// done
 				ProvideFeedback();
 				break;
 			case 12:
@@ -270,7 +270,7 @@ public class AdminController {
 	}
 
 	private void UpdateCareProviderInfo() throws SQLException {
-		
+
 		CareProviderPOJO careProviderPOJO = new CareProviderPOJO();
 		System.out.println("Enter Care Provider ID To Update Data");
 		int careProviderID = (Integer.parseInt(inputScanner.nextLine()));
@@ -356,22 +356,23 @@ public class AdminController {
 		// TODO Auto-generated method stub
 
 	}
-	private void ProvideFeedback() throws SQLException{
-		
-		ProviderFeedbackPOJO providerFeedbackPOJO = new ProviderFeedbackPOJO();	
+
+	private void ProvideFeedback() throws SQLException {
+
+		ProviderFeedbackPOJO providerFeedbackPOJO = new ProviderFeedbackPOJO();
 		System.out.println("Enter Parent ID");
 		providerFeedbackPOJO.setParentId(Integer.parseInt(inputScanner.nextLine()));
 		System.out.println("Enter Care Provider ID To Add Feedback/Suggestions");
 		providerFeedbackPOJO.setCareProviderId(Integer.parseInt(inputScanner.nextLine()));
 		boolean careProviderExists = adminService.displayCareProvider(providerFeedbackPOJO.getCareProviderId());
-		if(careProviderExists){
+		if (careProviderExists) {
 			System.out.println("Please Enter Feedback/Suggestions For Care Provider");
 			providerFeedbackPOJO.setFeedback(inputScanner.nextLine());
-			adminService.provideFeedback(providerFeedbackPOJO );
-		}else{
+			adminService.provideFeedback(providerFeedbackPOJO);
+		} else {
 			System.out.println("No Record Found !!");
 		}
-		
+
 	}
 
 }

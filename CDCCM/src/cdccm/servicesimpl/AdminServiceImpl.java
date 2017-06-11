@@ -82,22 +82,94 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void assignActivitiesToChildren() throws SQLException {
 		int resultCountAssignActivity;
+		int ageGroup, session;
+		String childId = "";
 		ResultSet chilIdList;
-		for (int ageGroup = 1; ageGroup <= 3; ageGroup++) {
+		for (ageGroup = 1; ageGroup <= 3; ageGroup++) {
 			chilIdList = dbConnector
 					.query("SELECT idchild,fk_age_group FROM CHILD_INFO where fk_age_group=" + ageGroup);
+			
 			while (chilIdList.next()) {
-				resultCountAssignActivity = dbConnector.insert("insert into report(fk_idchild,fk_idagegroup) VALUES("
-						+ chilIdList.getString("IDCHILD") + "," + chilIdList.getString("fk_age_group"));
+				// resultCountAssignActivity = dbConnector.insert("insert into
+				// report (fk_idchild,fk_idagegroup) VALUES("
+				// + chilIdList.getString("IDCHILD") + "," +
+				// chilIdList.getString("fk_age_group") + ")");
+				// childId = chilIdList.getString("IDCHILD");
 				if (ageGroup == 1) {
-					// logical loop to be used here to insert these three rows
-					dbConnector.query("update report set fk_idsession=101 where fk_idagegroup=1 and fk_idsession=0;");
-					dbConnector.query("update report set fk_idsession=102 where fk_idagegroup=1 and fk_idsession=0;");
-					dbConnector.query("update report set fk_idsession=102 where fk_idagegroup=1 and fk_idsession=0;");
+					for (session = 1; session < 4; session++) {
+						childId = chilIdList.getString("IDCHILD");
+						resultCountAssignActivity = dbConnector
+								.insert("insert into report (fk_idchild,fk_idagegroup) VALUES("
+										+ chilIdList.getString("IDCHILD") + "," + chilIdList.getString("fk_age_group")
+										+ ")");
+						dbConnector.insert("update report set fk_idsession = " + session + " where fk_idagegroup = "
+								+ ageGroup + " AND fk_idchild = " + chilIdList.getString("IDCHILD") + " AND fk_idsession = 0" + ";");
+						if (session == 1) {
+							dbConnector
+									.insert("update report set fk_idprovider = 1, fk_idactivity = 1 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						} else if (session == 2) {
+							dbConnector
+									.insert("update report set fk_idprovider = 3, fk_idactivity = 3 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						} else if (session == 3) {
+							dbConnector
+									.insert("update report set fk_idprovider = 5, fk_idactivity = 5 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						}
+
+					}
+				}
+				if (ageGroup == 2) {
+					for (session = 1; session <= 3; session++) {
+						resultCountAssignActivity = dbConnector
+								.insert("insert into report (fk_idchild,fk_idagegroup) VALUES("
+										+ chilIdList.getString("IDCHILD") + "," + chilIdList.getString("fk_age_group")
+										+ ")");
+						childId = chilIdList.getString("IDCHILD");
+						dbConnector.insert("update report set fk_idsession = " + session + " where fk_idagegroup = "
+								+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = 0" + ";");
+						if (session == 1) {
+							dbConnector
+									.insert("update report set fk_idprovider = 1, fk_idactivity = 7 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						} else if (session == 2) {
+							dbConnector
+									.insert("update report set fk_idprovider = 3, fk_idactivity = 9 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						} else if (session == 3) {
+							dbConnector
+									.insert("update report set fk_idprovider = 5, fk_idactivity = 11 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						}
+					}
+				}
+				if (ageGroup == 3) {
+					for (session = 1; session <= 3; session++) {
+						resultCountAssignActivity = dbConnector
+								.insert("insert into report (fk_idchild,fk_idagegroup) VALUES("
+										+ chilIdList.getString("IDCHILD") + "," + chilIdList.getString("fk_age_group")
+										+ ")");
+						childId = chilIdList.getString("IDCHILD");
+						dbConnector.insert("update report set fk_idsession = " + session + " where fk_idagegroup = "
+								+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = 0" + ";");
+						if (session == 1) {
+							dbConnector
+									.insert("update report set fk_idprovider = 2, fk_idactivity = 14 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						} else if (session == 2) {
+							dbConnector
+									.insert("update report set fk_idprovider = 4, fk_idactivity = 16 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						} else if (session == 3) {
+							dbConnector
+									.insert("update report set fk_idprovider = 6, fk_idactivity = 18 WHERE fk_idagegroup = "
+											+ ageGroup + " AND fk_idchild = " + childId + " AND fk_idsession = "+ session + ";");
+						}
+					}
 				}
 			}
 		}
-
 	}
 
 	@Override
