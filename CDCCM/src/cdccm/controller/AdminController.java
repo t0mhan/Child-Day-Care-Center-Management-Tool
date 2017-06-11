@@ -2,10 +2,7 @@ package cdccm.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Scanner;
-
-import org.jfree.chart.imagemap.ImageMapUtilities;
 
 import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
@@ -28,7 +25,7 @@ public class AdminController {
 		adminService = new AdminServiceImpl();
 	}
 
-	public void startOperations() throws Exception {
+	public void startOperations() {
 		System.out.println("User Entered As Admin \n");
 		do {
 			System.out.println("Please Select An Operation To Perform");
@@ -39,31 +36,27 @@ public class AdminController {
 			choice = Integer.parseInt(inputScanner.nextLine());
 			switch (choice) {
 			case 1:// done
-				try {
-					AddParent();
-					AddChild();
+				AddParent();
+				AddChild();
 
-					boolean addChildFlag = true;
-					do {
-						System.out.println("Want To Register Another Child (Y/N)");
-						char input = inputScanner.next().charAt(0);
-						if (input == 'Y' || input == 'y') {
-							AddChild();
-						} else {
-							System.out.println("Register Another Child Option Not Selected Prpperly, Try Again");
-							addChildFlag = false;
-						}
-					} while (addChildFlag);
+				boolean addChildFlag = true;
+				do {
+					System.out.println("Want To Register Another Child (Y/N)");
+					char input = inputScanner.next().charAt(0);
+					if (input == 'Y' || input == 'y') {
+						AddChild();
+					} else {
+						System.out.println("Register Another Child Option Not Selected Prpperly, Try Again");
+						addChildFlag = false;
+					}
+				} while (addChildFlag);
 
-					System.out.println("That's All Folks!! ");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				System.out.println("That's All Folks!! ");
 				break;
 			case 2:// done
 				AddCareProvider();
 				break;
-			case 3:
+			case 3://done
 				AddActivitiesToAllChildren();
 				break;
 			case 4:// done
@@ -75,7 +68,7 @@ public class AdminController {
 			case 6:// done
 				ShowAllChildren();
 				break;
-			case 7://done
+			case 7:// done
 				UpdateChildActivity();
 				break;
 			case 8:
@@ -90,7 +83,7 @@ public class AdminController {
 			case 11:// done
 				ProvideFeedback();
 				break;
-			case 12:
+			case 12://done
 				choiceFlag = false;
 				break;
 			default:
@@ -101,7 +94,7 @@ public class AdminController {
 		} while (choiceFlag);
 	}
 
-	private void AddParent() throws SQLException {
+	private void AddParent() {
 
 		ParentPOJO parentPOJO = new ParentPOJO();
 		ContactPOJO contactPOJO = new ContactPOJO();
@@ -131,7 +124,7 @@ public class AdminController {
 		adminService.insertParentDetails(parentPOJO, contactPOJO);
 	}
 
-	private void AddChild() throws SQLException, ParseException {
+	private void AddChild() {
 
 		ChildPOJO childPOJO = new ChildPOJO();
 		System.out.println("++++++++++ Please Enter Details Of Child ++++++++++\n ");
@@ -166,25 +159,29 @@ public class AdminController {
 		adminService.insertCareProvider(careProviderPOJO);
 	}
 
-	private void ShowAllChildren() throws SQLException {
-		System.out.println("Here Is List Of All Children");
-		ResultSet childList = adminService.listAllChild();
-		int numberOfChild = 1;
+	private void ShowAllChildren() {
+		try {
+			System.out.println("Here Is List Of All Children");
+			ResultSet childList = adminService.listAllChild();
+			int numberOfChild = 1;
 
-		while (childList.next()) {
-			System.out.println("Details of Child: " + numberOfChild);
-			System.out.println("First Name:" + childList.getString("name"));
-			System.out.println("Last Name:" + childList.getString("surname"));
-			System.out.println("Date Of Birth:" + childList.getString("dob"));
-			System.out.println("Age:" + childList.getString("age"));
-			numberOfChild++;
-			System.out.println("---------");
+			while (childList.next()) {
+				System.out.println("Details of Child: " + numberOfChild);
+				System.out.println("First Name:" + childList.getString("name"));
+				System.out.println("Last Name:" + childList.getString("surname"));
+				System.out.println("Date Of Birth:" + childList.getString("dob"));
+				System.out.println("Age:" + childList.getString("age"));
+				numberOfChild++;
+				System.out.println("---------");
+			}
+			System.out.printf("Above Is The List Of %d Children", numberOfChild);
+			System.out.println("");
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		System.out.printf("Above Is The List Of %d Children", numberOfChild);
-		System.out.println("");
 	}
 
-	private void AddActivityToChild() throws SQLException {
+	private void AddActivityToChild() {
 		boolean moreEntry = true;
 		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
 		System.out.println("Enter Child ID To Assign Activity and Care Provider");
@@ -206,7 +203,7 @@ public class AdminController {
 		} while (moreEntry);
 	}
 
-	private void UpdateChildActivity() throws SQLException, ParseException {
+	private void UpdateChildActivity() {
 		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
 		boolean moreEntry = true;
 
@@ -234,12 +231,12 @@ public class AdminController {
 		// TODO Auto-generated method stub
 	}
 
-	private void AddActivitiesToAllChildren() throws SQLException {
+	private void AddActivitiesToAllChildren() {
 		System.out.println("Welcome To Assiging All Children Acivities Based On Their Age Group");
 		adminService.assignActivitiesToChildren();
 	}
 
-	private void UpdateRegistrationInfo() throws Exception {
+	private void UpdateRegistrationInfo() {
 
 		boolean choiceFlag = true;
 		int choice = 0;
@@ -269,7 +266,7 @@ public class AdminController {
 		} while (choiceFlag);
 	}
 
-	private void UpdateCareProviderInfo() throws SQLException {
+	private void UpdateCareProviderInfo() {
 
 		CareProviderPOJO careProviderPOJO = new CareProviderPOJO();
 		System.out.println("Enter Care Provider ID To Update Data");
@@ -294,7 +291,7 @@ public class AdminController {
 		}
 	}
 
-	private void UpdateParentInfo() throws SQLException {
+	private void UpdateParentInfo() {
 		ParentPOJO parentPOJO = new ParentPOJO();
 		ContactPOJO contactPOJO = new ContactPOJO();
 		System.out.println("Enter Parent ID To Update Data");
@@ -330,7 +327,7 @@ public class AdminController {
 		}
 	}
 
-	private void UpdateChildInfo() throws SQLException, Exception {
+	private void UpdateChildInfo() {
 		System.out.println("Enter Child ID To Update Data");
 		int id = (Integer.parseInt(inputScanner.nextLine()));
 		ChildPOJO childPOJO = new ChildPOJO();
@@ -357,7 +354,7 @@ public class AdminController {
 
 	}
 
-	private void ProvideFeedback() throws SQLException {
+	private void ProvideFeedback() {
 
 		ProviderFeedbackPOJO providerFeedbackPOJO = new ProviderFeedbackPOJO();
 		System.out.println("Enter Parent ID");

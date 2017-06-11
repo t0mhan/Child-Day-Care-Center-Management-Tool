@@ -9,7 +9,6 @@ import cdccm.dbServices.MySQLDBConnector;
 
 import cdccm.pojo.AssignActivityPOJO;
 import cdccm.serviceApi.CareProviderService;
-import net.sf.jasperreports.ant.UpdaterElement;
 
 public class CareProviderImpl implements CareProviderService {
 	Scanner inputChoice = new Scanner(System.in);
