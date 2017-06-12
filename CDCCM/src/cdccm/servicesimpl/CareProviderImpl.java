@@ -2,7 +2,6 @@ package cdccm.servicesimpl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Scanner;
 
 import cdccm.dbServices.MySQLDBConnector;

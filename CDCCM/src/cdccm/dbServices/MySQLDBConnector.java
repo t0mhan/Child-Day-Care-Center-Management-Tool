@@ -13,7 +13,7 @@ public class MySQLDBConnector {
 	private PreparedStatement preparedstatement;
 	private static MySQLDBConnector dbConnectorObj;
 	
-	private MySQLDBConnector() {
+	public MySQLDBConnector() {
 		String url = "jdbc:mysql://localhost:3306/";
 		String dbName = "child_care";
 		String driver = "com.mysql.jdbc.Driver";
@@ -42,6 +42,7 @@ public class MySQLDBConnector {
 
 	public int insert(String insertQuery) throws SQLException {
 		resultStatement = conn.createStatement();
+
 		int resultCount = resultStatement.executeUpdate(insertQuery);
 		return resultCount;
 	}
@@ -52,7 +53,16 @@ public class MySQLDBConnector {
 		return resultCount;
 	}
 	
-	
+	public PreparedStatement ps (String query){
+		try {
+			preparedstatement=conn.prepareStatement(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return preparedstatement;
+		
+	}
 	public ResultSet getReport(String sql, int childid) throws SQLException {
 		preparedstatement=conn.prepareStatement(sql);
 		preparedstatement.setInt(1,childid);

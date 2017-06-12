@@ -10,9 +10,11 @@ import cdccm.pojo.ParentPOJO;
 import cdccm.pojo.ProviderFeedbackPOJO;
 
 public interface AdminService {
-	void insertChildDetails(ChildPOJO childPOJO);
+	//void insertChildDetails(ChildPOJO childPOJO) throws SQLException, ParseException;
+	boolean insertChildDetails(ParentPOJO parentchild);
 
-	void insertParentDetails(ParentPOJO parentPOJO, ContactPOJO contactPOJO);
+	//void insertParentDetails(ParentPOJO parentPOJO, ContactPOJO contactPOJO) throws SQLException;
+	boolean insertParentDetails(ParentPOJO parentPOJO);
 
 	void insertCareProvider(CareProviderPOJO careProviderPOJO);
 
