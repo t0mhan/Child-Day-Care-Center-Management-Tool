@@ -14,18 +14,7 @@ public class EmailValidator {
 		pattern = Pattern.compile(EMAIL_PATTERN);
 	}
 	public boolean validate(final String hex) {
-
 		matcher = pattern.matcher(hex);
 		return matcher.matches();
-
 	}
-	/*Instantiate this class in your code while entering email
-	 * public static void main(String[] args)
-	{
-		Scanner sc=new Scanner(System.in);
-		System.out.println("Enter Email");
-		String str=sc.nextLine();
-		EmailValidator emai=new EmailValidator();
-		System.out.println(emai.validate(str));
-	}*/
 }

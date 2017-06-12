@@ -141,9 +141,6 @@ public class AdminController {
 		}
 	}
 
-	//private void AddChild(ParentPOJO parentPOJO) {
-		
-
 	private void AddChild(ParentPOJO parentPOJO) {
 		boolean nextchild = true;
 		List<ChildPOJO> children = new ArrayList<>();
@@ -192,14 +189,20 @@ public class AdminController {
 				"++++++++++ Welcome To Care Provider Registration Portal, Please Enter Details Of Care Provider ++++++++++\n");
 		System.out.println("Enter The Complete Name: ");
 		careProviderPOJO.setName(inputScanner.nextLine());
-		System.out.println("Enter The Email: ");
-		String emailString = inputScanner.nextLine();
-		EmailValidator email = new EmailValidator();
-		boolean isEmail = (email.validate(emailString));
-		if (isEmail == true) {
-			careProviderPOJO.setEmail(emailString);
-		} else
-			System.out.println("Not Valid Email Id");
+		boolean emailflag = true;
+		do {
+			System.out.println("Enter The Email: ");
+			String emailString = inputScanner.nextLine();
+			EmailValidator email = new EmailValidator();
+			boolean isEmail = (email.validate(emailString));
+			if (isEmail == true) {
+				careProviderPOJO.setEmail(emailString);
+				emailflag = false;
+			} else {
+				System.out.println("Not Valid Email Id");
+				emailflag = true;
+			}
+		} while (emailflag);
 		System.out.println("Enter The Phone Number: ");
 		careProviderPOJO.setPhoneNumber(inputScanner.nextLine());
 		adminService.insertCareProvider(careProviderPOJO);
@@ -255,14 +258,11 @@ public class AdminController {
 
 		System.out.println("\nEnter Child ID To Update Activity ");
 		assignActivityPOJO.setChildID(inputScanner.nextInt());
-		System.out.println("Enter Child's AgeGroup");
-		assignActivityPOJO.setAgeGroup(inputScanner.nextInt());
 		do {
 			System.out.println(
 					"Select For Which Session You Want To Update (Select 1 For Morning 2 For Afternoon 3 For Evening)");
 			assignActivityPOJO.setSession(inputScanner.nextInt());
 			adminService.updateActivityToChild(assignActivityPOJO);
-
 			System.out.println("Do You Want To Update More Activity? Press Yes");
 			String choice = inputScanner.nextLine().toUpperCase();
 			if (choice == "YES") {
@@ -280,6 +280,7 @@ public class AdminController {
 	private void AddActivitiesToAllChildren() {
 		System.out.println("Welcome To Assiging All Children Acivities Based On Their Age Group");
 		adminService.assignActivitiesToChildren();
+		
 	}
 
 	private void UpdateRegistrationInfo() {
@@ -321,14 +322,20 @@ public class AdminController {
 		if (showProvider) {
 			System.out.println("Enter The Complete Name: ");
 			careProviderPOJO.setName(inputScanner.nextLine());
-			System.out.println("Enter The Email: ");
-			String emailString = inputScanner.nextLine();
-			EmailValidator email = new EmailValidator();
-			boolean isEmail = (email.validate(emailString));
-			if (isEmail == true) {
-				careProviderPOJO.setEmail(emailString);
-			} else
-				System.out.println("Not Valid Email Id");
+			boolean emailflag = true;
+			do {
+				System.out.println("Enter The Email: ");
+				String emailString = inputScanner.nextLine();
+				EmailValidator email = new EmailValidator();
+				boolean isEmail = (email.validate(emailString));
+				if (isEmail == true) {
+					careProviderPOJO.setEmail(emailString);
+					emailflag = false;
+				} else {
+					System.out.println("Not Valid Email Id");
+					emailflag = true;
+				}
+			} while (emailflag);
 			System.out.println("Enter The Phone Number: ");
 			careProviderPOJO.setPhoneNumber(inputScanner.nextLine());
 			adminService.updateCareProviderInfo(careProviderID, careProviderPOJO);
@@ -358,14 +365,20 @@ public class AdminController {
 			contactPOJO.setPincode(Integer.parseInt(inputScanner.nextLine()));
 			System.out.println("Enter The Phone Number: ");
 			contactPOJO.setPhoneNumber(inputScanner.nextLine());
-			System.out.println("Enter The Email: ");
-			String emailString = inputScanner.nextLine();
-			EmailValidator email = new EmailValidator();
-			boolean isEmail = (email.validate(emailString));
-			if (isEmail == true) {
-				contactPOJO.setEmail(emailString);
-			} else
-				System.out.println("Not Valid Email Id");
+			boolean emailflag = true;
+			do {
+				System.out.println("Enter The Email: ");
+				String emailString = inputScanner.nextLine();
+				EmailValidator email = new EmailValidator();
+				boolean isEmail = (email.validate(emailString));
+				if (isEmail == true) {
+					contactPOJO.setEmail(emailString);
+					emailflag = false;
+				} else {
+					System.out.println("Not Valid Email Id");
+					emailflag = true;
+				}
+			} while (emailflag);
 			adminService.updateParentInfo(parentID, parentPOJO);
 			adminService.updateContactInfo(parentID, contactPOJO);
 		} else {
@@ -384,8 +397,15 @@ public class AdminController {
 			childPOJO.setFirst_name(inputScanner.nextLine());
 			System.out.println("Enter The Last Name: ");
 			childPOJO.setLast_name(inputScanner.nextLine());
-			System.out.println("Enter The Date Of Birth in format (yyyy-mm-dd): ");
-			childPOJO.setDob(inputScanner.nextLine());
+			boolean dateflag = true;
+			do {
+				System.out.println("Enter The Date Of Birth in format (yyyy-mm-dd): ");
+				String date = inputScanner.nextLine();
+				if (CdccmUtilities.isValidFormat(date)) {
+					childPOJO.setDob(date);
+					dateflag = false;
+				}
+			} while (dateflag);
 			adminService.updateChildInfo(id, childPOJO);
 		} else
 			System.out.println("No Record Found !!");
