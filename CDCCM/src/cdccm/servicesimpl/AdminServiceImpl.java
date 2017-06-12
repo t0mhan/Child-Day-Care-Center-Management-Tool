@@ -495,35 +495,18 @@ public class AdminServiceImpl implements AdminService {
 		ResultSet resultSetParent = null;
 		boolean recordExists = false;
 		try {
-			java.sql.PreparedStatement ps = dbConnector.ps("SELECT name,surname FROM PARENT WHERE IDPARENT =  ? ");
+			java.sql.PreparedStatement ps = dbConnector.ps(
+					"SELECT p.name, p.surname, c.street, c.city, c.pincode, c.phone_number, c.emailid FROM PARENT p JOIN CONTACT c on p.idparent=c.fk_idparent WHERE idparent =  ? ");
 			ps.setInt(1, id);
 			resultSetParent = ps.executeQuery();
 			if (resultSetParent.next()) {
 				System.out.println("Parent First Name: " + resultSetParent.getString("name"));
 				System.out.println("Parent Last Name: " + resultSetParent.getString("surname"));
-				recordExists = true;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return recordExists;
-	}
-
-	@Override
-	public boolean displayContact(int id) {
-		ResultSet resultSetContact = null;
-		boolean recordExists = false;
-		try {
-			java.sql.PreparedStatement ps = dbConnector
-					.ps("SELECT street, city, pincode, phone_number, emailid FROM CONTACT WHERE FK_IDPARENT =  ? ");
-			ps.setInt(1, id);
-			resultSetContact = ps.executeQuery();
-			if (resultSetContact.next()) {
-				System.out.println("Street Name: " + resultSetContact.getString("street"));
-				System.out.println("City Name: " + resultSetContact.getString("city"));
-				System.out.println("Pincode: " + resultSetContact.getString("pincode"));
-				System.out.println("Phone Number: " + resultSetContact.getString("phone_number"));
-				System.out.println("Email Id: " + resultSetContact.getString("emailid"));
+				System.out.println("Street: " + resultSetParent.getString("street"));
+				System.out.println("City: " + resultSetParent.getString("city"));
+				System.out.println("Pincode: " + resultSetParent.getString("pincode"));
+				System.out.println("Phone Number: " + resultSetParent.getString("phone_number"));
+				System.out.println("Email Id: " + resultSetParent.getString("emailid"));
 				recordExists = true;
 			}
 		} catch (SQLException e) {

@@ -21,10 +21,11 @@ public class CareProviderImpl implements CareProviderService {
 	public void childPerformance(AssignActivityPOJO updatePerformance) {
 		int resultUpdate = 0;
 		try {
-			String updateQuery = "UPDATE REPORT SET CARE_PROVIDER_FEEDBACK = ' " + updatePerformance.getFeedback()
-					+ "' WHERE FK_IDCHILD = " + updatePerformance.getChildID() + " AND FK_IDSESSION = "
-					+ updatePerformance.getSession();
-			resultUpdate = dbConnector.insert(updateQuery);
+			java.sql.PreparedStatement ps = dbConnector.getInstance().ps("UPDATE REPORT SET CARE_PROVIDER_FEEDBACK = ' "
+					+ updatePerformance.getFeedback() + "' WHERE FK_IDCHILD = ? AND FK_IDSESSION = ?");
+			ps.setInt(1, updatePerformance.getChildID());
+			ps.setInt(2, updatePerformance.getSession());
+			resultUpdate = ps.executeUpdate();
 			if (resultUpdate > 0) {
 				System.out.println("Child Feedback Updated!!\n");
 			} else
@@ -36,21 +37,25 @@ public class CareProviderImpl implements CareProviderService {
 
 	@Override
 	public boolean displayChild(AssignActivityPOJO updatePerformance) {
+		ResultSet resultSetReport = null;
+		ResultSet resultSetActivity = null;
 		boolean recordExists = false;
 		try {
-			ResultSet resultSetParent = dbConnector
-					.query("SELECT * FROM REPORT WHERE fk_idchild = " + updatePerformance.getChildID());
-
-			while (resultSetParent.next()) {
-				System.out.println("Session : " + resultSetParent.getString("fk_idsession"));
-				System.out.println("Activity ID : " + resultSetParent.getString("FK_IDACTIVITY"));
-				updatePerformance.setActivityID(resultSetParent.getInt("FK_IDACTIVITY"));
-				ResultSet activityResuult = dbConnector
-						.query("SELECT ACTIVITY_NAME, ACTIVITY_DESCRIPTION FROM ACTIVITY WHERE IDACTIVITY = "
-								+ updatePerformance.getActivityID());
-				while (activityResuult.next()) {
-					System.out.println("Activity Name: " + activityResuult.getString("ACTIVITY_NAME"));
-					System.out.println("Activity Description: " + activityResuult.getString("ACTIVITY_DESCRIPTION"));
+			java.sql.PreparedStatement ps = dbConnector.getInstance()
+					.ps("SELECT fk_idsession,FK_IDACTIVITY  FROM REPORT WHERE fk_idchild = ? ");
+			ps.setInt(1, updatePerformance.getChildID());
+			resultSetReport = ps.executeQuery();
+			while (resultSetReport.next()) {
+				System.out.println("Session : " + resultSetReport.getString("fk_idsession"));
+				System.out.println("Activity ID : " + resultSetReport.getString("FK_IDACTIVITY"));
+				updatePerformance.setActivityID(resultSetReport.getInt("FK_IDACTIVITY"));
+				java.sql.PreparedStatement selectActivity = dbConnector.getInstance()
+						.ps("SELECT ACTIVITY_NAME, ACTIVITY_DESCRIPTION FROM ACTIVITY WHERE IDACTIVITY = ? ");
+				selectActivity.setInt(1, updatePerformance.getActivityID());
+				resultSetActivity = selectActivity.executeQuery();
+				while (resultSetActivity.next()) {
+					System.out.println("Activity Name: " + resultSetActivity.getString("ACTIVITY_NAME"));
+					System.out.println("Activity Description: " + resultSetActivity.getString("ACTIVITY_DESCRIPTION"));
 					System.out.println("");
 				}
 				recordExists = true;

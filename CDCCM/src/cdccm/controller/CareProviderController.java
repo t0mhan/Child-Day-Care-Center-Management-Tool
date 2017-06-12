@@ -44,7 +44,7 @@ public class CareProviderController {
 		boolean showChild = providerService.displayChild(assignActivityPOJO);
 		if (showChild) {
 			System.out.println(
-					"Select For Which Session You Want To Give Performance (Select 1 For Morning 2 For Afternoon 3 For Evening)");
+					"Select For Which Session You Want To Give Performance/Feedback For Child (Select 1 For Morning 2 For Afternoon 3 For Evening)");
 			assignActivityPOJO.setSession(Integer.parseInt(inputScanner.nextLine()));
 			System.out.println("Please Provide Areas Where Child is Good And Areas Where More Focus Is Needed!!");
 			assignActivityPOJO.setFeedback(inputScanner.nextLine());

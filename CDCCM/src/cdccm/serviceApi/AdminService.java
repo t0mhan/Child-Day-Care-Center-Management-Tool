@@ -10,10 +10,8 @@ import cdccm.pojo.ParentPOJO;
 import cdccm.pojo.ProviderFeedbackPOJO;
 
 public interface AdminService {
-	//void insertChildDetails(ChildPOJO childPOJO) throws SQLException, ParseException;
 	boolean insertChildDetails(ParentPOJO parentchild);
 
-	//void insertParentDetails(ParentPOJO parentPOJO, ContactPOJO contactPOJO) throws SQLException;
 	boolean insertParentDetails(ParentPOJO parentPOJO);
 
 	void insertCareProvider(CareProviderPOJO careProviderPOJO);
@@ -31,7 +29,7 @@ public interface AdminService {
 	void updateContactInfo(int parentID, ContactPOJO contactPOJO);
 
 	void updateCareProviderInfo(int careProviderID, CareProviderPOJO careProviderPOJO);
-	
+
 	void provideFeedback(ProviderFeedbackPOJO providerFeedbackPOJO);
 
 	void selectReport();
@@ -49,8 +47,6 @@ public interface AdminService {
 	boolean displayChild(int id);
 
 	boolean displayParent(int id);
-
-	boolean displayContact(int id);
 
 	boolean displayCareProvider(int id);
 

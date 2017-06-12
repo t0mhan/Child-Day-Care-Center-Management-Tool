@@ -350,7 +350,7 @@ public class AdminController {
 		System.out.println("Enter Parent ID To Update Data");
 		int parentID = (Integer.parseInt(inputScanner.nextLine()));
 		boolean showParent = adminService.displayParent(parentID);
-		adminService.displayContact(parentID);
+		//adminService.displayContact(parentID);
 		System.out.println("");
 		if (showParent) {
 			System.out.println("Enter The First Name: ");
