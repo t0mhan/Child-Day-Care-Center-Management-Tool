@@ -39,15 +39,15 @@ public interface AdminService {
 
 	void GenerateScheduleReport() throws SQLException;
 
-	ResultSet listAllChild();
+	List<ChildPOJO> listAllChild();
 
 	void generateBulckPerformanceReport();
 
-	ResultSet displayChild(int id);
+	ChildPOJO displayChild(int id);
 
-	ResultSet displayParent(int id);
+	ParentPOJO displayParent(int id);
 
-	ResultSet displayCareProvider(int id);
+	CareProviderPOJO displayCareProvider(int id);
 
 	void insertMealDetails(List<FoodPOJO> foodlist);
 

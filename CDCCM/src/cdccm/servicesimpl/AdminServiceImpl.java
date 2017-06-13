@@ -37,9 +37,9 @@ import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import net.sf.jasperreports.view.JasperViewer;
 
 public class AdminServiceImpl implements AdminService {
-	
+
 	private MySQLDBConnector dbConnector;
-Scanner inputChoice = new Scanner(System.in);
+	Scanner inputChoice = new Scanner(System.in);
 
 	public AdminServiceImpl() {
 		dbConnector = MySQLDBConnector.getInstance();
@@ -85,7 +85,6 @@ Scanner inputChoice = new Scanner(System.in);
 		return true;
 	}
 
-	
 	public boolean insertParentDetails(ParentPOJO parentPOJO) {
 		try {
 			List<ContactPOJO> contactpojo = parentPOJO.getContact();
@@ -111,13 +110,21 @@ Scanner inputChoice = new Scanner(System.in);
 	}
 
 	@Override
-	public ResultSet listAllChild() {
-		ResultSet childrenList = null;
+	public List<ChildPOJO> listAllChild() {
+		List<ChildPOJO> childrenList = new ArrayList<>();
+		ResultSet resultSetChildren = null;
 		try {
-			childrenList = dbConnector.query("SELECT IDCHILD, NAME, SURNAME, DOB, AGE FROM CHILD_INFO");
+			resultSetChildren = dbConnector.query("SELECT IDCHILD, NAME, SURNAME, DOB, AGE FROM CHILD_INFO");
+			while (resultSetChildren.next()) {
+				childrenList.add(new ChildPOJO(resultSetChildren.getInt(1), resultSetChildren.getString(2),
+						resultSetChildren.getString(3), resultSetChildren.getDate(4).toString(),
+						resultSetChildren.getInt(5)));
+			}
+
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Problem In retriving Child Info " + e);
 		}
+
 		return childrenList;
 	}
 
@@ -273,28 +280,18 @@ Scanner inputChoice = new Scanner(System.in);
 			e.printStackTrace();
 		}
 	}
+
 	@SuppressWarnings("unused")
 	@Override
 	public void updateChildInfo(int childId, ChildPOJO childPOJO) {
 		try {
-			
+
 			int resultUpdate = 0;
 			String updateQuery = "";
 			int age = CdccmUtilities.getAge(childPOJO.getDob());
 			int ageGroup = CdccmUtilities.getAge(childPOJO.getDob());
 			if (age < 0 || ageGroup > 4) {
 				System.out.println("Child Is Either Too Young Or Too Old For Day Care!! \n");
-				// if(childPOJO.getFirst_name() != null){
-				// updateQuery = updateQuery + "name = " +
-				// childPOJO.getFirst_name();
-				// }
-				// if(childPOJO.getLast_name() != null){
-				// updateQuery = updateQuery + "surname = " +
-				// childPOJO.getLast_name();
-				// }
-				// if(childPOJO.getDob() != null){
-				// updateQuery = updateQuery + "dob = " + childPOJO.getDob();
-				// }Child
 			} else {
 				java.sql.PreparedStatement ps = dbConnector.getInstance().ps(
 						"Update CHILD_INFO SET NAME = ?,  surname = ?, dob = ?,  age = ?,  fk_age_group = ?  WHERE idchild = ? ");
@@ -429,35 +426,55 @@ Scanner inputChoice = new Scanner(System.in);
 	}
 
 	@Override
-	public ResultSet displayChild(int id) {
-		ResultSet resultSetChild = null;
+	public ChildPOJO displayChild(int id) {
+		ResultSet resultSetchildData = null;
+		ChildPOJO childObj = new ChildPOJO();
 		try {
 			java.sql.PreparedStatement ps = dbConnector
-					.ps("SELECT idchild,name, surname, dob, age  FROM CHILD_INFO WHERE IDCHILD = ? ");
+					.ps("SELECT name, surname, dob, age  FROM CHILD_INFO WHERE IDCHILD = ? ");
 			ps.setInt(1, id);
-			resultSetChild = ps.executeQuery();
+			resultSetchildData = ps.executeQuery();
+			if (resultSetchildData.next()) {
+				childObj.setFirst_name(resultSetchildData.getString("name"));
+				childObj.setLast_name(resultSetchildData.getString("surname"));
+				childObj.setDob(resultSetchildData.getString("dob"));
+				childObj.setAge(resultSetchildData.getInt("age"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return resultSetChild;
+		return childObj;
 	}
 
 	@Override
-	public ResultSet displayParent(int id) {
+	public ParentPOJO displayParent(int id) {
 		ResultSet resultSetParent = null;
+		ParentPOJO parentObject = null;
+		List<ContactPOJO> listOfContacts = new ArrayList<>();
 		try {
 			java.sql.PreparedStatement ps = dbConnector.ps(
 					"SELECT p.name, p.surname, c.street, c.city, c.pincode, c.phone_number, c.emailid FROM PARENT p JOIN CONTACT c on p.idparent=c.fk_idparent WHERE idparent =  ? ");
 			ps.setInt(1, id);
 			resultSetParent = ps.executeQuery();
+			if (resultSetParent.next()) {
+				parentObject = new ParentPOJO();
+				parentObject.setParentFirst_name(resultSetParent.getString("name"));
+				parentObject.setParentLast_name(resultSetParent.getString("surname"));
+				while (resultSetParent.next()) {
+					listOfContacts.add(new ContactPOJO(resultSetParent.getString(3), resultSetParent.getString(4),
+							resultSetParent.getInt(5), resultSetParent.getString(6), resultSetParent.getString(7)));
+				}
+				parentObject.setContact(listOfContacts);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return resultSetParent;
+		return parentObject;
 	}
 
 	@Override
-	public ResultSet displayCareProvider(int id) {
+	public CareProviderPOJO displayCareProvider(int id) {
+		CareProviderPOJO careProviderObj = new CareProviderPOJO();
 		ResultSet resultSetProvider = null;
 		try {
 			dbConnector.query("SELECT * FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = " + id);
@@ -465,10 +482,15 @@ Scanner inputChoice = new Scanner(System.in);
 					"SELECT idcare_provider, name, emailid, phone_number FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = ? ");
 			ps.setInt(1, id);
 			resultSetProvider = ps.executeQuery();
+			if (resultSetProvider.next()) {
+				careProviderObj.setName(resultSetProvider.getString("name"));
+				careProviderObj.setEmail(resultSetProvider.getString("emailid"));
+				careProviderObj.setPhoneNumber(resultSetProvider.getString("phone_number"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return resultSetProvider;
+		return careProviderObj;
 	}
 
 	@Override
@@ -622,6 +644,7 @@ Scanner inputChoice = new Scanner(System.in);
 		}
 		return activityDescList;
 	}
+
 	private boolean clearTheReferencedData() throws SQLException {
 		ResultSet resultset = dbConnector.query("SELECT MAX(idparent) from PARENT");
 		if (resultset.next()) {
@@ -649,6 +672,7 @@ Scanner inputChoice = new Scanner(System.in);
 		}
 		return false;
 	}
+
 	private void printScheduleReport(Collection<SchedulePOJO> schedule, int childid) throws SQLException {
 		System.out.println("Inside Printreport");
 		ReportFiller reportfiller = new ReportFiller(schedule);
@@ -750,8 +774,7 @@ Scanner inputChoice = new Scanner(System.in);
 	@Override
 	public void generateBulckPerformanceReport() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 }

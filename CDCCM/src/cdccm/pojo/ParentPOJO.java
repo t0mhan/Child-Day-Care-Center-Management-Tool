@@ -3,7 +3,7 @@ package cdccm.pojo;
 import java.util.List;
 
 public class ParentPOJO {
-
+	private int parentId;
 	private String parent_first_name;
 	private String parent_last_name;
     private List<ContactPOJO> contact;
@@ -38,6 +38,14 @@ public class ParentPOJO {
 
 	public void setParentLast_name(String last_name) {
 		this.parent_last_name = last_name;
+	}
+
+	public int getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(int parentId) {
+		this.parentId = parentId;
 	}
 
 }

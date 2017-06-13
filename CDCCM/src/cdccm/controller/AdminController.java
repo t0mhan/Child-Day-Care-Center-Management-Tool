@@ -1,9 +1,9 @@
 package cdccm.controller;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import cdccm.pojo.AssignActivityPOJO;
@@ -231,25 +231,23 @@ public class AdminController {
 	}
 
 	private void ShowAllChildren() {
-		try {
-			System.out.println("Here Is List Of All Children");
-			ResultSet childList = adminService.listAllChild();
-			int numberOfChild = 1;
-
-			while (childList.next()) {
-				System.out.println("Details of Child: " + numberOfChild);
-				System.out.println("First Name:" + childList.getString("name"));
-				System.out.println("Last Name:" + childList.getString("surname"));
-				System.out.println("Date Of Birth:" + childList.getString("dob"));
-				System.out.println("Age:" + childList.getString("age"));
-				numberOfChild++;
-				System.out.println("---------");
-			}
-			System.out.printf("Above Is The List Of %d Children", numberOfChild);
-			System.out.println("");
-		} catch (SQLException e) {
-			e.printStackTrace();
+		List<ChildPOJO> listOfChildren = null;
+		System.out.println("Here Is List Of All Children");
+		listOfChildren = adminService.listAllChild();
+		int numberOfChild = 1;
+		Iterator it = listOfChildren.iterator();
+		while (it.hasNext()) {
+			ChildPOJO childObj = (ChildPOJO) it.next();
+			System.out.println("Details of Child: " + childObj.getChildId());
+			System.out.println("First Name:" + childObj.getFirst_name());
+			System.out.println("Last Name:" + childObj.getLast_name());
+			System.out.println("Date Of Birth:" + childObj.getDob());
+			System.out.println("Age:" + childObj.getAge());
+			numberOfChild++;
+			System.out.println("---------");
 		}
+		System.out.printf("Above Is The List Of %d Children", numberOfChild);
+		System.out.println("");
 	}
 
 	private void SendNewsEventsReports() {
@@ -345,13 +343,13 @@ public class AdminController {
 		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
 		System.out.println("Enter Child ID To Assign Activity and Care Provider");
 		assignActivityPOJO.setChildID(inputScanner.nextInt());
-		ResultSet childData = adminService.displayChild(assignActivityPOJO.getChildID());
-		if (childData.next()) {
-			System.out.println("Child ID: " + childData.getString("idchild"));
-			System.out.println("First Name: " + childData.getString("name"));
-			System.out.println("Last Name: " + childData.getString("surname"));
-			System.out.println("Date Of Birth: " + childData.getString("dob"));
-			System.out.println("Age:" + childData.getString("age"));
+		ChildPOJO childData = adminService.displayChild(assignActivityPOJO.getChildID());
+		if (childData != null) {
+			System.out.println("Child ID: " + childData.getChildId());
+			System.out.println("First Name: " + childData.getFirst_name());
+			System.out.println("Last Name: " + childData.getLast_name());
+			System.out.println("Date Of Birth: " + childData.getDob());
+			System.out.println("Age:" + childData.getAge());
 		}
 		do {
 			System.out.println("Enter The Session (For Morning 1, For Afternoon 2, For Evening 3)");
@@ -425,133 +423,125 @@ public class AdminController {
 
 	private void UpdateCareProviderInfo() {
 
-		CareProviderPOJO careProviderPOJO = new CareProviderPOJO();
+		CareProviderPOJO careProviderObj = new CareProviderPOJO();
 		System.out.println("Enter Care Provider ID To Update Data");
 		int careProviderID = (Integer.parseInt(inputScanner.nextLine()));
-		ResultSet showProvider = adminService.displayCareProvider(careProviderID);
-		try {
-			if (showProvider.next()) {
-				System.out.println("Care Provider ID: " + showProvider.getString("idcare_provider"));
-				System.out.println("Name: " + showProvider.getString("name"));
-				System.out.println("Email Id: " + showProvider.getString("emailid"));
-				System.out.println("Phone number: " + showProvider.getString("phone_number"));
-				System.out.println("Enter The Complete Name: ");
-				careProviderPOJO.setName(inputScanner.nextLine());
-				boolean emailflag = true;
-				do {
-					System.out.println("Enter The Email: ");
-					String emailString = inputScanner.nextLine();
-					EmailValidator email = new EmailValidator();
-					boolean isEmail = (email.validate(emailString));
-					if (isEmail == true) {
-						careProviderPOJO.setEmail(emailString);
-						emailflag = false;
-					} else {
-						System.out.println("Not Valid Email Id");
-						emailflag = true;
-					}
-				} while (emailflag);
-				System.out.println("Enter The Phone Number: ");
-				careProviderPOJO.setPhoneNumber(inputScanner.nextLine());
-				adminService.updateCareProviderInfo(careProviderID, careProviderPOJO);
-			} else {
-				System.out.println("No Record Found !!");
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		careProviderObj = adminService.displayCareProvider(careProviderID);
+		if (careProviderObj != null) {
+			System.out.println("Care Provider ID: " + careProviderID);
+			System.out.println("Name: " + careProviderObj.getName());
+			System.out.println("Email Id: " + careProviderObj.getEmail());
+			System.out.println("Phone number: " + careProviderObj.getPhoneNumber());
+			System.out.println("Enter The Complete Name: ");
+			careProviderObj.setName(inputScanner.nextLine());
+			boolean emailflag = true;
+			do {
+				System.out.println("Enter The Email: ");
+				String emailString = inputScanner.nextLine();
+				EmailValidator email = new EmailValidator();
+				boolean isEmail = (email.validate(emailString));
+				if (isEmail == true) {
+					careProviderObj.setEmail(emailString);
+					emailflag = false;
+				} else {
+					System.out.println("Not Valid Email Id");
+					emailflag = true;
+				}
+			} while (emailflag);
+			System.out.println("Enter The Phone Number: ");
+			careProviderObj.setPhoneNumber(inputScanner.nextLine());
+			adminService.updateCareProviderInfo(careProviderID, careProviderObj);
+		} else {
+			System.out.println("No Record Found !!");
 		}
 	}
 
 	private void UpdateParentInfo() {
 		ParentPOJO parentPOJO = new ParentPOJO();
-		ContactPOJO contactPOJO = new ContactPOJO();
+		ContactPOJO contactPOJO = null;
 		System.out.println("Enter Parent ID To Update Data");
 		int parentID = (Integer.parseInt(inputScanner.nextLine()));
-		ResultSet showParent = adminService.displayParent(parentID);
-		try {
-			if (showParent.next()) {
-				System.out.println("Parent First Name: " + showParent.getString("name"));
-				System.out.println("Parent Last Name: " + showParent.getString("surname"));
-				System.out.println("Street: " + showParent.getString("street"));
-				System.out.println("City: " + showParent.getString("city"));
-				System.out.println("Pincode: " + showParent.getString("pincode"));
-				System.out.println("Phone Number: " + showParent.getString("phone_number"));
-				System.out.println("Email Id: " + showParent.getString("emailid"));
-
-				System.out.println("Enter The First Name: ");
-				parentPOJO.setParentFirst_name(inputScanner.nextLine());
-				System.out.println("Enter The Last Name: ");
-				parentPOJO.setParentLast_name(inputScanner.nextLine());
-				System.out.println("Enter The Street Name: ");
-				contactPOJO.setStreet(inputScanner.nextLine());
-				System.out.println("Enter The City: ");
-				contactPOJO.setCity(inputScanner.nextLine());
-				System.out.println("Enter The Pincode: ");
-				contactPOJO.setPincode(Integer.parseInt(inputScanner.nextLine()));
-				System.out.println("Enter The Phone Number: ");
-				contactPOJO.setPhoneNumber(inputScanner.nextLine());
-				boolean emailflag = true;
-				do {
-					System.out.println("Enter The Email: ");
-					String emailString = inputScanner.nextLine();
-					EmailValidator email = new EmailValidator();
-					boolean isEmail = (email.validate(emailString));
-					if (isEmail == true) {
-						contactPOJO.setEmail(emailString);
-						emailflag = false;
-					} else {
-						System.out.println("Not Valid Email Id");
-						emailflag = true;
-					}
-				} while (emailflag);
-				adminService.updateParentInfo(parentID, parentPOJO);
-				adminService.updateContactInfo(parentID, contactPOJO);
-			} else {
-				System.out.println("No Record Found !!");
+		ParentPOJO parentObject = new ParentPOJO();
+		List<ContactPOJO> contactList = new ArrayList<>();
+		parentObject = adminService.displayParent(parentID);
+		if (parentObject != null) {
+			System.out.println("Parent First Name: " + parentObject.getParentFirst_name());
+			System.out.println("Parent Last Name: " + parentObject.getParentLast_name());
+			contactList = parentObject.getContact();
+			Iterator it = contactList.iterator();
+			while (it.hasNext()) {
+				ContactPOJO contactobject = (ContactPOJO) it.next();
+				System.out.println("Street: " + contactobject.getStreet());
+				System.out.println("City: " + contactobject.getCity());
+				System.out.println("Pincode: " + contactobject.getPincode());
+				System.out.println("Phone Number: " + contactobject.getPhoneNumber());
+				System.out.println("Email Id: " + contactobject.getEmail());
 			}
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else {
+			System.out.println("No record Available!!");
+		}
+		System.out.println("");
+		if (parentObject != null) {
+			contactPOJO = new ContactPOJO();
+			System.out.println("Enter The First Name: ");
+			parentPOJO.setParentFirst_name(inputScanner.nextLine());
+			System.out.println("Enter The Last Name: ");
+			parentPOJO.setParentLast_name(inputScanner.nextLine());
+			System.out.println("Enter The Street Name: ");
+			contactPOJO.setStreet(inputScanner.nextLine());
+			System.out.println("Enter The City: ");
+			contactPOJO.setCity(inputScanner.nextLine());
+			System.out.println("Enter The Pincode: ");
+			contactPOJO.setPincode(Integer.parseInt(inputScanner.nextLine()));
+			System.out.println("Enter The Phone Number: ");
+			contactPOJO.setPhoneNumber(inputScanner.nextLine());
+			boolean emailflag = true;
+			do {
+				System.out.println("Enter The Email: ");
+				String emailString = inputScanner.nextLine();
+				EmailValidator email = new EmailValidator();
+				boolean isEmail = (email.validate(emailString));
+				if (isEmail == true) {
+					contactPOJO.setEmail(emailString);
+					emailflag = false;
+				} else {
+					System.out.println("Not Valid Email Id");
+					emailflag = true;
+				}
+			} while (emailflag);
+			adminService.updateParentInfo(parentID, parentPOJO);
+			adminService.updateContactInfo(parentID, contactPOJO);
+		} else {
+			System.out.println("No Record Found !!");
 		}
 	}
 
 	private void UpdateChildInfo() {
+		ChildPOJO childObj = new ChildPOJO();
 		System.out.println("Enter Child ID To Update Data");
 		int id = (Integer.parseInt(inputScanner.nextLine()));
-		ChildPOJO childPOJO = new ChildPOJO();
-		ResultSet childData = adminService.displayChild(id);
-		try {
-			if (childData.next()) {
-				System.out.println("Child ID: " + childData.getString("idchild"));
-				System.out.println("First Name: " + childData.getString("name"));
-				System.out.println("Last Name: " + childData.getString("surname"));
-				System.out.println("Date Of Birth: " + childData.getString("dob"));
+		ChildPOJO childData = adminService.displayChild(id);
+		if (childData != null) {
+			System.out.println("First Name: " + childData.getFirst_name());
+			System.out.println("Last Name: " + childData.getLast_name());
+			System.out.println("Date Of Birth: " + childData.getDob());
+			System.out.println("Age:" + childData.getAge());
 
-				System.out.println("Age:" + childData.getString("age"));
-				System.out.println("++++++++++ To Update the Data Please Enter Details Of Child ++++++++++\n ");
-				System.out.println("Enter The First Name: ");
-				childPOJO.setFirst_name(inputScanner.nextLine());
-				System.out.println("Enter The Last Name: ");
-				childPOJO.setLast_name(inputScanner.nextLine());
-				boolean dateflag = true;
-				do {
-					System.out.println("Enter The Date Of Birth in format (yyyy-mm-dd): ");
-					String date = inputScanner.nextLine();
-					if (CdccmUtilities.isValidFormat(date)) {
-						childPOJO.setDob(date);
-						dateflag = false;
-					}
-				} while (dateflag);
-				adminService.updateChildInfo(id, childPOJO);
-			} else
-				System.out.println("No Record Found !!");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("++++++++++ To Update the Data Please Enter Details Of Child ++++++++++\n ");
+			System.out.println("Enter The First Name: ");
+			childObj.setFirst_name(inputScanner.nextLine());
+			System.out.println("Enter The Last Name: ");
+			childObj.setLast_name(inputScanner.nextLine());
+			boolean dateflag = true;
+			do {
+				System.out.println("Enter The Date Of Birth in format (yyyy-mm-dd): ");
+				String date = inputScanner.nextLine();
+				if (CdccmUtilities.isValidFormat(date)) {
+					childObj.setDob(date);
+					dateflag = false;
+				}
+			} while (dateflag);
+			adminService.updateChildInfo(id, childObj);
 		}
 	}
 
@@ -597,7 +587,6 @@ public class AdminController {
 				choiceFlag = false;
 			}
 		} while (choiceFlag);
-
 	}
 
 	private void ProvideFeedback() {
@@ -607,25 +596,22 @@ public class AdminController {
 		providerFeedbackPOJO.setParentId(Integer.parseInt(inputScanner.nextLine()));
 		System.out.println("Enter Care Provider ID To Add Feedback/Suggestions");
 		providerFeedbackPOJO.setCareProviderId(Integer.parseInt(inputScanner.nextLine()));
-		ResultSet careProviderExists = adminService.displayCareProvider(providerFeedbackPOJO.getCareProviderId());
-		try {
-			if (careProviderExists.next()) {
-				System.out.println("Care Provider ID: " + careProviderExists.getString("idcare_provider"));
-				System.out.println("Name: " + careProviderExists.getString("name"));
-				System.out.println("Email Id: " + careProviderExists.getString("emailid"));
-				System.out.println("Phone number: " + careProviderExists.getString("phone_number"));
-				
-				System.out.println("Please Enter Feedback/Suggestions For Care Provider");
-				providerFeedbackPOJO.setFeedback(inputScanner.nextLine());
-				adminService.provideFeedback(providerFeedbackPOJO);
-			} else {
-				System.out.println("No Record Found !!");
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		CareProviderPOJO careProviderObj = new CareProviderPOJO();
+		careProviderObj = adminService.displayCareProvider(providerFeedbackPOJO.getCareProviderId());
+		if (careProviderObj != null) {
+			System.out.println("Care Provider ID: " + providerFeedbackPOJO.getCareProviderId());
+			System.out.println("Name: " + careProviderObj.getName());
+			System.out.println("Email Id: " + careProviderObj.getEmail());
+			System.out.println("Phone number: " + careProviderObj.getPhoneNumber());
+			System.out.println("Enter The Complete Name: ");
+			careProviderObj.setName(inputScanner.nextLine());
 
+			System.out.println("Please Enter Feedback/Suggestions For Care Provider");
+			providerFeedbackPOJO.setFeedback(inputScanner.nextLine());
+			adminService.provideFeedback(providerFeedbackPOJO);
+		} else {
+			System.out.println("No Record Found !!");
+		}
 	}
 
 	private void CreateFoodProgram() {
