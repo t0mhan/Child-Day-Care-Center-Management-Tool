@@ -1,5 +1,6 @@
 package cdccm.utilities;
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,18 +24,17 @@ public class CdccmUtilities {
 		Years age = Years.yearsBetween(birthdate, now);
 		return age.getYears();
 	}
-	
-	public static boolean isValidFormat(String value) {
-        Date date = null;
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-            date = sdf.parse(value);
-            if (!value.equals(sdf.format(date))) {
-                date = null;
-            }
-        } catch (ParseException ex) {
-           System.out.println("Wrong date format");
-        }
-        return date != null;
-    }
+	 public static boolean isValidFormat(String value) {
+	        Date date = null;
+	        try {
+	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+	            date = sdf.parse(value);
+	            if (!value.equals(sdf.format(date))) {
+	                date = null;
+	            }
+	        } catch (ParseException ex) {
+	           System.out.println("Wrong date format");
+	        }
+	        return date != null;
+	    }
 }

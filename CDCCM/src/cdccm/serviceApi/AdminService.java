@@ -2,15 +2,19 @@ package cdccm.serviceApi;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.List;
+
 import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
+import cdccm.pojo.ChildNamePlate;
 import cdccm.pojo.ChildPOJO;
 import cdccm.pojo.ContactPOJO;
+import cdccm.pojo.FoodPOJO;
 import cdccm.pojo.ParentPOJO;
 import cdccm.pojo.ProviderFeedbackPOJO;
 
 public interface AdminService {
-	boolean insertChildDetails(ParentPOJO parentchild);
 
 	boolean insertParentDetails(ParentPOJO parentPOJO);
 
@@ -32,22 +36,30 @@ public interface AdminService {
 
 	void provideFeedback(ProviderFeedbackPOJO providerFeedbackPOJO);
 
-	void selectReport();
+	void generateReport(int childid) throws SQLException;
 
-	void selectSchedule();
-
-	void selectNewsEvents();
-
-	void generateReport(int childid);
+	void GenerateScheduleReport() throws SQLException;
 
 	ResultSet listAllChild() throws SQLException;
 
 	boolean displayInfo(int id, String tableName);
+
+	void generateBulckPerformanceReport();
 
 	boolean displayChild(int id);
 
 	boolean displayParent(int id);
 
 	boolean displayCareProvider(int id);
+
+	void insertMealDetails(List<FoodPOJO> foodlist);
+
+	void deleteMealDay(FoodPOJO foodPOJO);
+
+	void updateFood(FoodPOJO foodPOJO);
+
+	boolean insertChildDetails(ParentPOJO parentpojo) throws SQLException, ParseException;
+
+	void dumpReportToArchive();
 
 }

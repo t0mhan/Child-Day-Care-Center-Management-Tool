@@ -1,29 +1,45 @@
 package cdccm.servicesimpl;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
-import com.mysql.jdbc.PreparedStatement;
-
+import ar.com.fdvs.dj.domain.builders.ColumnBuilderException;
 import cdccm.dbServices.MySQLDBConnector;
+import cdccm.pojo.ActivityPOJO;
 import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
+import cdccm.pojo.ChildIdAgeGroupId;
 import cdccm.pojo.ChildPOJO;
+import cdccm.pojo.ChildReportPOJO;
 import cdccm.pojo.ContactPOJO;
+import cdccm.pojo.FoodPOJO;
 import cdccm.pojo.ParentPOJO;
 import cdccm.pojo.ProviderFeedbackPOJO;
+import cdccm.pojo.SchedulePOJO;
 import cdccm.serviceApi.AdminService;
 import cdccm.utilities.CdccmUtilities;
-
-@SuppressWarnings("static-access")
+import cdccm.utilities.FileNameGenerator;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.view.JasperViewer;
 
 public class AdminServiceImpl implements AdminService {
-	Scanner inputChoice = new Scanner(System.in);
+	
 	private MySQLDBConnector dbConnector;
+Scanner inputChoice = new Scanner(System.in);
 
 	public AdminServiceImpl() {
 		dbConnector = MySQLDBConnector.getInstance();
@@ -69,36 +85,7 @@ public class AdminServiceImpl implements AdminService {
 		return true;
 	}
 
-	private boolean clearTheReferencedData() {
-		try {
-			ResultSet resultset = dbConnector.query("SELECT MAX(idparent) from PARENT");
-			if (resultset.next()) {
-				int parentToDelete = resultset.getInt(1);
-				int deltedRows = 0;
-				resultset = dbConnector.query("SELECT idchild from child_info where fk_idparent=" + parentToDelete);
-
-				if (!resultset.next()) {
-					System.out.println("parent to delete: " + parentToDelete);
-					deltedRows = dbConnector.delete("DELETE FROM contact where fk_idparent=" + parentToDelete);
-
-					System.out.println("deleted contacts: " + deltedRows);
-					if (deltedRows > 0) {
-						deltedRows = 0;
-						System.out.println("Contacts Deleted...");
-						deltedRows = dbConnector.delete("DELETE FROM parent where idparent=" + parentToDelete);
-						System.out.println("deleted parent: " + deltedRows);
-						if (deltedRows > 0) {
-							return true;
-						}
-					}
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
+	
 	public boolean insertParentDetails(ParentPOJO parentPOJO) {
 		try {
 			List<ContactPOJO> contactpojo = parentPOJO.getContact();
@@ -286,25 +273,6 @@ public class AdminServiceImpl implements AdminService {
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public void selectReport() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void selectSchedule() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void selectNewsEvents() {
-		// TODO Auto-generated method stub
-
-	}
-
 	@SuppressWarnings("unused")
 	@Override
 	public void updateChildInfo(int childId, ChildPOJO childPOJO) {
@@ -555,4 +523,273 @@ public class AdminServiceImpl implements AdminService {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void insertMealDetails(List<FoodPOJO> foodlist) {
+		int resultCountFood;
+		Iterator it = foodlist.iterator();
+		while (it.hasNext()) {
+			FoodPOJO foodobj = (FoodPOJO) it.next();
+			try {
+				resultCountFood = dbConnector.insert("INSERT INTO FOOD(day, breakfast, lunch,snacks) VALUES('"
+						+ foodobj.getDay() + "','" + foodobj.getBreakfast() + "','" + foodobj.getLunch() + "','"
+						+ foodobj.getSnack() + "')");
+				if ((resultCountFood > 0))
+					System.out.println("Food Record Inserted Successfully\n");
+				else
+					System.out.println("Error Inserting Record Please Try Again\n");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void updateFood(FoodPOJO foodPOJO) {
+		int resultUpdate = 0;
+
+		String column_to_set, query_aux;
+
+		if (foodPOJO.getBreakfast() != null) {
+			column_to_set = "breakfast";
+			query_aux = foodPOJO.getBreakfast();
+		} else if (foodPOJO.getLunch() != null) {
+			column_to_set = "lunch";
+			query_aux = foodPOJO.getLunch();
+		} else {
+			query_aux = foodPOJO.getSnack();
+			column_to_set = "snak";
+		}
+
+		String updateQuery = "UPDATE food SET " + column_to_set;
+		updateQuery = updateQuery + " = '" + query_aux + "' WHERE day = '" + foodPOJO.getDay() + "'";
+
+		try {
+			resultUpdate = dbConnector.insert(updateQuery);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (resultUpdate > 0) {
+			System.out.println("Care Food Record Updated!!\n");
+		} else
+			System.out.println("Error Occured, Record Not Updated");
+
+	}
+
+	@Override
+	public void deleteMealDay(FoodPOJO foodPOJO) {
+		int resultUpdate = 0;
+		String updateQuery = "DELETE FROM FOOD ";
+		updateQuery = updateQuery + " WHERE day = '" + foodPOJO.getDay() + "'";
+
+		try {
+			resultUpdate = dbConnector.delete(updateQuery);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (resultUpdate > 0) {
+			System.out.println("Food Deleted correctly!!\n");
+		} else
+			System.out.println("Error Occured, Record Not Updated");
+
+	}
+
+	@Override
+	public void GenerateScheduleReport() throws SQLException {
+
+		Set<ChildIdAgeGroupId> chid_ageid = getAvailableChilden();
+		// above method takes all children from report table
+		Collection<SchedulePOJO> schedule = null;
+		ResultSet resultset = null;
+		/* call to prcedure where it will compose the schedule for child */
+		String sql = "{call child_care.update_plan_for_astudent(?, ?)}";
+		Iterator<ChildIdAgeGroupId> it = chid_ageid.iterator();
+
+		while (it.hasNext()) {
+			ChildIdAgeGroupId cag = it.next();
+
+			// get composed schedule
+			resultset = dbConnector.callProcedure(sql, cag.getChildid(), cag.getAgegroupid());
+			schedule = new ArrayList<>();
+
+			while (resultset.next()) {// create list of schedule objs.
+				schedule.add(new SchedulePOJO(resultset.getString(1), resultset.getString(2)));
+			}
+			printScheduleReport(schedule, cag.getChildid());
+		}
+	}
+
+	protected List<FoodPOJO> extractfood() throws SQLException {
+		List<FoodPOJO> listOffood = new ArrayList<>();
+		ResultSet resultset = null;
+		String sqlforfood = "select * from FOOD";
+		try {
+			resultset = dbConnector.query(sqlforfood);
+		} catch (SQLException e1) {
+			System.out.println("Problem in extracting food");
+		}
+		while (resultset.next()) {
+			listOffood.add(new FoodPOJO(resultset.getString(1), resultset.getString(2), resultset.getString(3),
+					resultset.getString(4)));
+		}
+		return listOffood;
+	}
+
+	protected List<ActivityPOJO> getActivityDescription(int childid) throws SQLException {
+		ResultSet resultset = null;
+
+		List<ActivityPOJO> activityDescList = new ArrayList<>();
+		String sqlforactivityDesc = "select r.fk_idsession,a.activity_name, a.activity_description "
+				+ "from activity a join report r " + "on(a.idactivity=r.fk_idactivity) " + "where r.fk_idchild=?;";
+		try {
+			resultset = dbConnector.getReport(sqlforactivityDesc, childid);
+		} catch (SQLException e) {
+			System.out.println("No Activity Description found");
+		}
+		while (resultset.next()) {
+			ActivityPOJO activity = new ActivityPOJO();
+			activity.setSession(resultset.getInt(1));
+			activity.setName(resultset.getString(2));
+			activity.setDescription(resultset.getString(3));
+			activityDescList.add(activity);
+		}
+		return activityDescList;
+	}
+	private boolean clearTheReferencedData() throws SQLException {
+		ResultSet resultset = dbConnector.query("SELECT MAX(idparent) from PARENT");
+		if (resultset.next()) {
+			int parent2delete = resultset.getInt(1);
+			int deltedrows = 0;
+			resultset = dbConnector.query("SELECT idchild from child_info where fk_idparent=" + parent2delete);
+			// delete the parent and contact only when no first child is already
+			// inserted
+			if (!resultset.next()) {// first child is not there so we can delete
+									// parent
+				System.out.println("parent to delete: " + parent2delete);
+				deltedrows = dbConnector.delete("DELETE FROM contact where fk_idparent=" + parent2delete);
+
+				System.out.println("deleted contacts: " + deltedrows);
+				if (deltedrows > 0) {
+					deltedrows = 0;
+					System.out.println("Contacts Deleted...");
+					deltedrows = dbConnector.delete("DELETE FROM parent where idparent=" + parent2delete);
+					System.out.println("deleted parent: " + deltedrows);
+					if (deltedrows > 0) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	private void printScheduleReport(Collection<SchedulePOJO> schedule, int childid) throws SQLException {
+		System.out.println("Inside Printreport");
+		ReportFiller reportfiller = new ReportFiller(schedule);
+		try {
+			JasperPrint jp = reportfiller.getReport("schedulereport".toString(), childid);
+			JasperViewer jasperViewer = new JasperViewer(jp);
+			jasperViewer.setVisible(true);
+
+			JRPdfExporter exporter = new JRPdfExporter();
+			exporter.setExporterInput(new SimpleExporterInput(jp));
+
+			/* util method for creating file with date and rollno name */
+			FileNameGenerator filenamegererator = new FileNameGenerator(schedule, childid);
+			File file = filenamegererator.generateUniqueFileName("schedulereport".toString());
+
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(file));
+			SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+			configuration.setMetadataAuthor("chetan"); // set some
+														// config as we like
+			exporter.setConfiguration(configuration);
+			exporter.exportReport();
+		} catch (JRException | ColumnBuilderException | ClassNotFoundException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void printPerformanceReport(Collection<ChildReportPOJO> subsetoflistofscore, int childid)
+			throws SQLException {
+
+		ReportFiller reportfiller = new ReportFiller(subsetoflistofscore);
+
+		try {
+			// the argument zero has no meaning just to satisfy the signature
+			JasperPrint jp = reportfiller.getReport("performancereport".toString(), 0);
+
+			JasperViewer jasperViewer = new JasperViewer(jp);
+			jasperViewer.setVisible(true);
+			JRPdfExporter exporter = new JRPdfExporter();
+			exporter.setExporterInput(new SimpleExporterInput(jp));
+			// the second field (0) here has no meaning just to satisfy
+			// signatuere
+			FileNameGenerator filenamegererator = new FileNameGenerator(subsetoflistofscore, 0);
+
+			// util method for creating file with date name
+			File file = filenamegererator.generateUniqueFileName("performancereport".toString());
+
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(file));
+			SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+			// set some config as we like
+			configuration.setMetadataAuthor("chetan");
+
+			exporter.setConfiguration(configuration);
+			exporter.exportReport();
+		} catch (JRException | ColumnBuilderException | ClassNotFoundException ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	private Set<ChildIdAgeGroupId> getAvailableChilden() {
+		// This supportive method returns the availlable childId and GroupId
+		// from report(where schedule is already made) table
+		Set<ChildIdAgeGroupId> chid_ageid = new HashSet<>();
+
+		final String sql = "select distinct fk_idchild,fk_idagegroup from report group by fk_idchild;";
+
+		try {
+			ResultSet resultset = dbConnector.query(sql);
+			// ChildIdAgeGroupId chid_ageid
+			while (resultset.next()) {
+				chid_ageid.add(new ChildIdAgeGroupId(resultset.getInt(1), resultset.getInt(2)));
+			}
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
+		return chid_ageid;
+	}
+
+	@Override
+	public void dumpReportToArchive() {
+		System.out.println("Dumping Report to Archive");
+		String sqldump = "insert into archive select * from report";
+		String sqlclear = "Delete from report";
+		try {
+			ResultSet resultset = dbConnector.query(sqldump);
+			if (resultset.next()) {
+				resultset = null;
+				System.out.println("Data Has been Dumpped Now Report table is clearing....");
+				resultset = dbConnector.query(sqldump);
+				if (resultset.next()) {
+					System.out.println("****Report Table cleared****");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void generateBulckPerformanceReport() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }

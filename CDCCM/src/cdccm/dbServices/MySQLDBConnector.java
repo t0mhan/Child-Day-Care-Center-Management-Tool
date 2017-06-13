@@ -1,25 +1,33 @@
 package cdccm.dbServices;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import com.lowagie.text.List;
+
+import cdccm.helper.PropertyReader;
+import cdccm.pojo.ParentNamePlate;
 
 public class MySQLDBConnector {
-	public Connection conn;
-	private Statement resultStatement;
-	private PreparedStatement preparedstatement;
-	private static MySQLDBConnector dbConnectorObj;
+	public Connection conn=null;
+	private Statement resultStatement=null;
+	private static MySQLDBConnector dbConnectorObj=null;
+	private PreparedStatement preparedstatement=null;
+	PropertyReader directory=null;
 	
-	public MySQLDBConnector() {
+	private MySQLDBConnector() {
 		String url = "jdbc:mysql://localhost:3306/";
 		String dbName = "child_care";
 		String driver = "com.mysql.jdbc.Driver";
-		String userName = "root";//default user name
-		String password = "admin";//default password
-		
+		String userName = "root";// default user name
+		String password = "admin";// default password
+        this.directory=new PropertyReader();
 		try {
 			Class.forName(driver).newInstance();
 			this.conn = (Connection) DriverManager.getConnection(url + dbName, userName, password);
@@ -39,6 +47,22 @@ public class MySQLDBConnector {
 		ResultSet res = resultStatement.executeQuery(query);
 		return res;
 	}
+	public ArrayList<ParentNamePlate> getParentNameplate(String query) throws SQLException
+	{   ResultSet resultset=null;
+	    ArrayList<ParentNamePlate> parentnameplate=new ArrayList<ParentNamePlate>();
+		try {
+			resultStatement = conn.createStatement();
+			resultset = resultStatement.executeQuery(query);
+			while(resultset.next())
+			{
+				parentnameplate.add(new ParentNamePlate(resultset.getString(1),resultset.getString(2),resultset.getInt(3)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return parentnameplate;
+	}
 
 	public int insert(String insertQuery) throws SQLException {
 		resultStatement = conn.createStatement();
@@ -52,6 +76,15 @@ public class MySQLDBConnector {
 		int resultCount = resultStatement.executeUpdate(deleteQuery);
 		return resultCount;
 	}
+
+	public ResultSet getReport(String sql, int childid) throws SQLException {
+		ResultSet resultset = null;
+
+		preparedstatement = conn.prepareStatement(sql);
+		preparedstatement.setInt(1, childid);
+
+		return preparedstatement.executeQuery();
+	}
 	
 	public PreparedStatement ps (String query){
 		try {
@@ -63,10 +96,38 @@ public class MySQLDBConnector {
 		return preparedstatement;
 		
 	}
-	public ResultSet getReport(String sql, int childid) throws SQLException {
-		preparedstatement=conn.prepareStatement(sql);
-		preparedstatement.setInt(1,childid);
-		ResultSet res=preparedstatement.executeQuery();
-		return res;
+
+	public ResultSet callProcedure(String sql, int childid, int groupid) {
+		ResultSet resultset = null;
+		int flag = 0;
+
+		CallableStatement callablestatement;
+		try {
+			callablestatement = conn.prepareCall(sql);
+			callablestatement.setInt(1, childid);
+			callablestatement.setInt(2, groupid);
+
+			flag = callablestatement.executeUpdate();
+			callablestatement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (flag > 0) {
+			System.out.println("Procedure Executed Successfully");
+			try {
+				preparedstatement = conn.prepareStatement("select * from timetable");
+				resultset = preparedstatement.executeQuery();
+			} catch (SQLException e) {
+
+				e.printStackTrace();
+			}
+
+		} else {
+			System.out.println("Procedure NOT Executed Successfully");
+		}
+
+		return resultset;
 	}
 }

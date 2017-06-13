@@ -7,11 +7,26 @@ private String surname;
 private String dateOfBirth;
 private String ageGroup;
 private String activityName;
+private String sessionname;
+private String feedback;
+public String getFeedback() {
+	return feedback;
+}
+public void setFeedback(String feedback) {
+	this.feedback = feedback;
+}
+private String providername;
+public String getProvidername() {
+	return providername;
+}
+public void setProvidername(String providername) {
+	this.providername = providername;
+}
 private int total;
 private float percentage;
 
 public ChildReportPOJO(int childid, String name, String surname, String dateOfBirth, String ageGroup,
-		String activityName, int total, float percentage) {
+		String activityName,String sessionname,String providername,String feedback) {
 	
 	this.childid = childid;
 	this.name = name;
@@ -19,8 +34,16 @@ public ChildReportPOJO(int childid, String name, String surname, String dateOfBi
 	this.dateOfBirth = dateOfBirth;
 	this.ageGroup = ageGroup;
 	this.activityName = activityName;
-	this.total = total;
-	this.percentage = percentage;
+	this.sessionname=sessionname;
+	this.providername=providername;
+	this.feedback=feedback;
+//	this.total = total;
+//	this.percentage = percentage;
+//	this.mon=mon;
+//	this.tue=tue;
+//	this.wen=wen;
+//	this.thu=thu;
+//	this.fri=fri;
 }
 public int getChildid() {
 	return childid;

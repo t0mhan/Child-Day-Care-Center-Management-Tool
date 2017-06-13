@@ -2,6 +2,7 @@ package cdccm.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,10 +10,12 @@ import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
 import cdccm.pojo.ChildPOJO;
 import cdccm.pojo.ContactPOJO;
+import cdccm.pojo.FoodPOJO;
 import cdccm.pojo.ParentPOJO;
 import cdccm.pojo.ProviderFeedbackPOJO;
 import cdccm.serviceApi.AdminService;
 import cdccm.servicesimpl.AdminServiceImpl;
+import cdccm.servicesimpl.EmailService;
 import cdccm.utilities.CdccmUtilities;
 import cdccm.utilities.EmailValidator;;
 
@@ -21,6 +24,7 @@ public class AdminController {
 	private Scanner inputScanner;
 	private boolean choiceFlag = true;
 	private AdminService adminService;
+	private EmailService emailservice;
 
 	public AdminController(Scanner inputScanner) {
 		this.inputScanner = inputScanner;
@@ -32,8 +36,8 @@ public class AdminController {
 		do {
 			System.out.println("Please Select An Operation To Perform");
 			System.out.println(
-					"1. Register A Child \n2. Register Care Provider \n3. Add Activity To All Children \n4. Add Activity For A Child \n5. Update Child, Parent or Care Provider Info \n6. List All Children   \n7. Update Activity and Care Provider "
-							+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child\n10.Generate Performance Report Of Child \n11.Provide Feedback  Of Care Provider \n12.Main Menu.");
+					"1. Register A Child \n2. Register Care Provider \n3. Register Activity To All Children \n4. Register Activity For A Single Child \n5. Update Child, Prent or Care Provider Info \n6. List All Children \n7. Update Activity and Care Provider   \n8. Generate  Reports Of Child "
+							+ "\n9. Send News/Events/report To Parent \n10. Provide Feedback  Of Care Provider \n11. Maintain Meal Program \n12. Main Menu.");
 			int choice = 0;
 			choice = Integer.parseInt(inputScanner.nextLine());
 			switch (choice) {
@@ -48,7 +52,12 @@ public class AdminController {
 				AddActivitiesToAllChildren();
 				break;
 			case 4:// done
-				AddActivityToChild();
+				try {
+					AddActivityToChild();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				break;
 			case 5:// done
 				UpdateRegistrationInfo();
@@ -60,16 +69,22 @@ public class AdminController {
 				UpdateChildActivity();
 				break;
 			case 8:
-				GenerateSchedule();
+				try {
+					GenerateReport();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}// chetan
+				System.out.println("Number taken");
 				break;
-			case 9:
-				SendNewsEvents();
+			case 9:// chetan
+				SendNewsEventsReports();
 				break;
 			case 10:
-				GenerateReport();
-				break;
-			case 11:// done
 				ProvideFeedback();
+				break;
+			case 11:
+				CreateFoodProgram();
 				break;
 			case 12:// done
 				choiceFlag = false;
@@ -137,13 +152,13 @@ public class AdminController {
 			this.AddChild(parentPOJO);
 		} else {
 			System.out.println("Parent Info NOT Inserted ");
-
 		}
 	}
 
 	private void AddChild(ParentPOJO parentPOJO) {
 		boolean nextchild = true;
 		List<ChildPOJO> children = new ArrayList<>();
+		try{
 		do {// get multiple children if any
 			ChildPOJO child = new ChildPOJO();
 			System.out.println("++++++++++ Please Enter Details Of Child ++++++++++\n ");
@@ -178,6 +193,12 @@ public class AdminController {
 		} else {
 			System.out.println("No Record Inserted");
 
+		}
+		}catch(SQLException e){
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -230,7 +251,95 @@ public class AdminController {
 		}
 	}
 
-	private void AddActivityToChild() {
+	private void SendNewsEventsReports() {
+		boolean choiceFlag = true;
+		String messageHeadading = null;
+		String messageBody = null;
+		String date = null;
+		int choice = 0;
+
+		System.out.println("-------------------------Welcome To Mailing Service-------------------");
+		System.out.println(
+				"Now Select An Operation To Perform\n1. Send Performance Reports to Everyone\n2. Send Schedule Everyone\n3. Send Event/News Information\n4. Send Email to Specific Person ");
+		choice = inputScanner.nextInt();
+		inputScanner.nextLine();
+		do {
+			switch (choice) {
+			case 1:
+				System.out.println("Enter The Report date in(yyyy-mm-dd) format");
+				date = inputScanner.nextLine();
+				if (CdccmUtilities.isValidFormat(date)) {
+					System.out.println("valid date");
+					System.out.println("Enter The Message Heading");
+					messageHeadading = inputScanner.nextLine();
+					System.out.println("Enter The Message Body");
+					messageBody = inputScanner.nextLine();
+					// make call to emailservice with date,head,body
+					EmailService emailService = new EmailService(date, messageHeadading, messageBody);
+					// send the report
+					emailService.send("performance".toString());
+				}
+
+				choiceFlag = false;
+				break;
+			case 2:
+				System.out.println("Enter The Report date in(yyyy-mm-dd) format");
+				date = inputScanner.nextLine();
+				if (CdccmUtilities.isValidFormat(date)) {
+					System.out.println("Enter The Message Heading");
+					messageHeadading = inputScanner.nextLine();
+
+					System.out.println("Enter The Message Body");
+					messageBody = inputScanner.nextLine();
+					System.out.println(date + " " + messageHeadading + " " + messageBody);
+					EmailService emailService1 = new EmailService(date, messageHeadading, messageBody);
+
+					emailService1.send("schedule".toString());
+				}
+				choiceFlag = false;
+				break;
+			case 3:
+				System.out.println("-----------------Send Event/News Information-----------------");
+
+				System.out.println("Enter The Message Heading");
+				messageHeadading = inputScanner.nextLine();
+
+				System.out.println("Enter The Message Body");
+				messageBody = inputScanner.nextLine();
+
+				EmailService emailService2 = new EmailService(null, messageHeadading, messageBody);
+				emailService2.send("news".toString());
+				choiceFlag = false;
+				break;
+			case 4:
+				System.out.println("-----------------Send Mail to Specific person-----------------");
+				System.out.println("Enter Email Id of the Person You want to send Email to");
+				String emailid = inputScanner.nextLine();
+				EmailValidator vatidator = new EmailValidator();
+				if (vatidator.validate(emailid)) {
+					System.out.println("Enter The Message Heading");
+					messageHeadading = inputScanner.nextLine();
+
+					System.out.println("Enter The Message Body");
+					messageBody = inputScanner.nextLine();
+
+					EmailService emailService3 = new EmailService();
+					System.out.println("HEad " + messageHeadading + "Body " + messageBody);
+					emailService3.sendSpecificMail(emailid, messageHeadading, messageBody);
+				} else {
+					System.out.println("**Invalid email Id**");
+				}
+				choiceFlag = false;
+				break;
+
+			default:
+				System.out.println("Wrong Choice");
+				choiceFlag = false;
+			}
+		} while (choiceFlag);
+	}
+
+	private void AddActivityToChild() throws SQLException {
 		boolean moreEntry = true;
 		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
 		System.out.println("Enter Child ID To Assign Activity and Care Provider");
@@ -272,11 +381,6 @@ public class AdminController {
 			}
 		} while (moreEntry);
 	}
-
-	private void SendNewsEvents() {
-		// TODO Auto-generated method stub
-	}
-
 	private void AddActivitiesToAllChildren() {
 		System.out.println("Welcome To Assiging All Children Acivities Based On Their Age Group");
 		adminService.assignActivitiesToChildren();
@@ -411,12 +515,48 @@ public class AdminController {
 			System.out.println("No Record Found !!");
 	}
 
-	private void GenerateReport() {
+	private void GenerateReport() throws SQLException {
 
-	}
-
-	private void GenerateSchedule() {
-		// TODO Auto-generated method stub
+		boolean choiceFlag = true;
+		// String tableName="";
+		int choice = 0;
+		System.out.println("Welcome To Report Generation!!");
+		System.out.println(
+				"Now Select An Operation To Perform\n1. Generate performance Report For One Children\n2. Generate performance Report for all \n3. Generate Schedule Copies\n4. Dump Report to Archive");
+		choice = inputScanner.nextInt();
+		inputScanner.nextLine();
+		if (choice == 4) {
+			System.out.println("Are you sure you want to Clear REPORT Table and Put into Archieve ?; Y or N");
+			String confirm = inputScanner.nextLine().toUpperCase();
+			if (confirm.equals("N")) {
+				choice = 0;
+			}
+		}
+		do {
+			switch (choice) {
+			case 1:
+				System.out.println("Enter Childid to create the report");
+				int childid = this.inputScanner.nextInt();
+				adminService.generateReport(childid);
+				choiceFlag = false;
+				break;
+			case 2:
+				adminService.generateBulckPerformanceReport();
+				choiceFlag = false;
+				break;
+			case 3:
+				adminService.GenerateScheduleReport();
+				choiceFlag = false;
+				break;
+			case 4:
+				adminService.dumpReportToArchive();
+				choiceFlag = false;
+				break;
+			default:
+				System.out.println("Wrong Choice");
+				choiceFlag = false;
+			}
+		} while (choiceFlag);
 
 	}
 
@@ -434,6 +574,103 @@ public class AdminController {
 			adminService.provideFeedback(providerFeedbackPOJO);
 		} else {
 			System.out.println("No Record Found !!");
+		}
+
+	}
+
+	private void CreateFoodProgram() {
+		FoodPOJO foodobject = null;
+		FoodPOJO FoodPOJO = null;
+		List<FoodPOJO> foodlist = new ArrayList<>();
+		System.out.println("++++++++++ Welcome To Meal Program Registration Portal ++++++++++\n");
+		System.out.println("++++++++++ Please Enter Details for the Meals for all the week  ++++++++++\n ");
+
+		System.out.println("Please Select An Operation To Perform");
+		System.out.println("1. Create Meal Program \n2. Update Meal Program \n3. Delete Meal Pogram for day ");
+		int operation = 0;
+		operation = Integer.parseInt(inputScanner.nextLine());
+		int daycounter = 1;
+		boolean moreEntry = true;
+		switch (operation) {
+		case 1:
+			do {
+				foodobject = new FoodPOJO();
+				System.out.println(
+						"Enter The day to complete the Meal program: Select Please   Mon / Tue / Wed / Thu / Fri ");
+				foodobject.setDay(inputScanner.nextLine());
+				System.out.println("Enter The Breakfast for " + foodobject.getDay());
+
+				foodobject.setBreakfast(inputScanner.nextLine());
+				System.out.println("Enter The Lunch for " + foodobject.getDay());
+				foodobject.setLunch(inputScanner.nextLine());
+				System.out.println("Enter The Snack for " + foodobject.getDay());
+				foodobject.setSnack(inputScanner.nextLine());
+
+				foodlist.add(foodobject);
+				System.out.println("Do You Want To Create More Meals? Press Yes");
+				String choice = inputScanner.nextLine().toUpperCase();
+				daycounter++;
+
+				if (!choice.equals("YES") || daycounter > 5) {
+					moreEntry = false;
+					adminService.insertMealDetails(foodlist);
+				}
+			} while (moreEntry);
+			break;
+
+		// update
+		case 2:
+			int option;
+			moreEntry = true;
+			do {
+
+				System.out.println("\nEnter Day To Update Meal ");
+				FoodPOJO.setDay(inputScanner.nextLine());
+				System.out.println("Enter which Meal will be updated : 1.  Breakfast / 2. Lunch / 3. Snak");
+				option = Integer.parseInt(inputScanner.nextLine());
+
+				if (option == 1) {
+					System.out.println("Enter the new BreakFast for " + FoodPOJO.getDay());
+					FoodPOJO.setBreakfast(inputScanner.nextLine());
+				} else if (option == 2) {
+					System.out.println("Enter the new Lunch for " + FoodPOJO.getDay());
+					FoodPOJO.setLunch(inputScanner.nextLine());
+				} else {
+					System.out.println("Enter the new Meal for " + FoodPOJO.getDay());
+					FoodPOJO.setSnack(inputScanner.nextLine());
+				}
+
+				adminService.updateFood(FoodPOJO);
+
+				System.out.println("Do You Want To Update More Meals? Press Yes");
+				String choice1 = inputScanner.nextLine().toUpperCase();
+				if (choice1.equalsIgnoreCase("YES")) {
+
+				} else
+					moreEntry = false;
+			} while (moreEntry);
+
+			break;
+
+		case 3:
+			moreEntry = true;
+			do {
+				System.out.println(
+						"Enter The day to delete from the Meal program: Select Please   Mon / Tue / Wed / Thu / Fri ");
+				FoodPOJO.setDay(inputScanner.nextLine());
+				adminService.deleteMealDay(FoodPOJO);
+
+				System.out.println("Do You Want To Delete More Meals? Press Yes");
+				String choice1 = inputScanner.nextLine().toUpperCase();
+				if (choice1.equals("YES")) {
+
+				} else
+					moreEntry = false;
+			} while (moreEntry);
+
+		default:
+			System.out.println("OOPS, You Have Entered Wrong Choice!!\n Please Try Again!!");
+			break;
 		}
 
 	}
