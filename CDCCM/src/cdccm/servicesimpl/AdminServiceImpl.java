@@ -111,7 +111,7 @@ Scanner inputChoice = new Scanner(System.in);
 	}
 
 	@Override
-	public ResultSet listAllChild() throws SQLException {
+	public ResultSet listAllChild() {
 		ResultSet childrenList = null;
 		try {
 			childrenList = dbConnector.query("SELECT IDCHILD, NAME, SURNAME, DOB, AGE FROM CHILD_INFO");
@@ -363,7 +363,7 @@ Scanner inputChoice = new Scanner(System.in);
 
 			java.sql.PreparedStatement preparedStatement = MySQLDBConnector.getInstance()
 					.ps("UPDATE CARE_PROVIDER SET name = ?,emailid = ?, phone_number = ? Where idcare_provider = ? ");
-			preparedStatement.setString(1, careProviderPOJO.getEmail());
+			preparedStatement.setString(1, careProviderPOJO.getName());
 			preparedStatement.setString(2, careProviderPOJO.getEmail());
 			preparedStatement.setString(3, careProviderPOJO.getPhoneNumber());
 			preparedStatement.setInt(4, careProviderId);
@@ -429,81 +429,46 @@ Scanner inputChoice = new Scanner(System.in);
 	}
 
 	@Override
-	public boolean displayInfo(int id, String tableName) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean displayChild(int id) {
+	public ResultSet displayChild(int id) {
 		ResultSet resultSetChild = null;
-		boolean recordExists = false;
 		try {
 			java.sql.PreparedStatement ps = dbConnector
 					.ps("SELECT idchild,name, surname, dob, age  FROM CHILD_INFO WHERE IDCHILD = ? ");
 			ps.setInt(1, id);
 			resultSetChild = ps.executeQuery();
-			if (resultSetChild.next()) {
-				System.out.println("Child ID: " + resultSetChild.getString("idchild"));
-				System.out.println("First Name: " + resultSetChild.getString("name"));
-				System.out.println("Last Name: " + resultSetChild.getString("surname"));
-				System.out.println("Date Of Birth: " + resultSetChild.getString("dob"));
-				System.out.println("Age:" + resultSetChild.getString("age"));
-				recordExists = true;
-			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return recordExists;
+		return resultSetChild;
 	}
 
 	@Override
-	public boolean displayParent(int id) {
+	public ResultSet displayParent(int id) {
 		ResultSet resultSetParent = null;
-		boolean recordExists = false;
 		try {
 			java.sql.PreparedStatement ps = dbConnector.ps(
 					"SELECT p.name, p.surname, c.street, c.city, c.pincode, c.phone_number, c.emailid FROM PARENT p JOIN CONTACT c on p.idparent=c.fk_idparent WHERE idparent =  ? ");
 			ps.setInt(1, id);
 			resultSetParent = ps.executeQuery();
-			if (resultSetParent.next()) {
-				System.out.println("Parent First Name: " + resultSetParent.getString("name"));
-				System.out.println("Parent Last Name: " + resultSetParent.getString("surname"));
-				System.out.println("Street: " + resultSetParent.getString("street"));
-				System.out.println("City: " + resultSetParent.getString("city"));
-				System.out.println("Pincode: " + resultSetParent.getString("pincode"));
-				System.out.println("Phone Number: " + resultSetParent.getString("phone_number"));
-				System.out.println("Email Id: " + resultSetParent.getString("emailid"));
-				recordExists = true;
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return recordExists;
+		return resultSetParent;
 	}
 
 	@Override
-	public boolean displayCareProvider(int id) {
+	public ResultSet displayCareProvider(int id) {
 		ResultSet resultSetProvider = null;
-		boolean recordExists = false;
 		try {
 			dbConnector.query("SELECT * FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = " + id);
 			java.sql.PreparedStatement ps = dbConnector.ps(
 					"SELECT idcare_provider, name, emailid, phone_number FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = ? ");
 			ps.setInt(1, id);
 			resultSetProvider = ps.executeQuery();
-			if (resultSetProvider.next()) {
-				System.out.println("Care Provider ID: " + resultSetProvider.getString("idcare_provider"));
-				System.out.println("Name: " + resultSetProvider.getString("name"));
-				System.out.println("Email Id: " + resultSetProvider.getString("emailid"));
-				System.out.println("Phone number: " + resultSetProvider.getString("phone_number"));
-				recordExists = true;
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return recordExists;
+		return resultSetProvider;
 	}
 
 	@Override
@@ -752,16 +717,13 @@ Scanner inputChoice = new Scanner(System.in);
 
 		try {
 			ResultSet resultset = dbConnector.query(sql);
-			// ChildIdAgeGroupId chid_ageid
 			while (resultset.next()) {
 				chid_ageid.add(new ChildIdAgeGroupId(resultset.getInt(1), resultset.getInt(2)));
 			}
-
 		} catch (SQLException e) {
 
 			e.printStackTrace();
 		}
-
 		return chid_ageid;
 	}
 

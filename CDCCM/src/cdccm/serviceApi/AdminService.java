@@ -7,7 +7,6 @@ import java.util.List;
 
 import cdccm.pojo.AssignActivityPOJO;
 import cdccm.pojo.CareProviderPOJO;
-import cdccm.pojo.ChildNamePlate;
 import cdccm.pojo.ChildPOJO;
 import cdccm.pojo.ContactPOJO;
 import cdccm.pojo.FoodPOJO;
@@ -40,17 +39,15 @@ public interface AdminService {
 
 	void GenerateScheduleReport() throws SQLException;
 
-	ResultSet listAllChild() throws SQLException;
-
-	boolean displayInfo(int id, String tableName);
+	ResultSet listAllChild();
 
 	void generateBulckPerformanceReport();
 
-	boolean displayChild(int id);
+	ResultSet displayChild(int id);
 
-	boolean displayParent(int id);
+	ResultSet displayParent(int id);
 
-	boolean displayCareProvider(int id);
+	ResultSet displayCareProvider(int id);
 
 	void insertMealDetails(List<FoodPOJO> foodlist);
 

@@ -25,8 +25,8 @@ public class MySQLDBConnector {
 		String url = "jdbc:mysql://localhost:3306/";
 		String dbName = "child_care";
 		String driver = "com.mysql.jdbc.Driver";
-		String userName = "root";// default user name
-		String password = "admin";// default password
+		String userName = "root";
+		String password = "admin";
         this.directory=new PropertyReader();
 		try {
 			Class.forName(driver).newInstance();
