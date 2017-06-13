@@ -274,7 +274,7 @@ public class AdminServiceImpl implements AdminService {
 			assignActivityPOJO.setCareProviderID(inputChoice.nextInt());
 			recordInsert = dbConnector
 					.insert("Insert INTO REPORT (fk_idchild,fk_idagegroup,fk_idactivity,fk_idprovider,fk_idsession) VALUES('"
-							+ assignActivityPOJO.getSession() + "','" + assignActivityPOJO.getAgeGroup() + "','"
+							+ assignActivityPOJO.getChildID() + "','" + assignActivityPOJO.getAgeGroup() + "','"
 							+ assignActivityPOJO.getActivityID() + "','" + assignActivityPOJO.getCareProviderID()
 							+ "','" + assignActivityPOJO.getSession() + "')");
 			if (recordInsert > 0) {
@@ -309,8 +309,8 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void updateChildInfo(int childId, ChildPOJO childPOJO) {
 		try {
+			
 			int resultUpdate = 0;
-
 			String updateQuery = "";
 			int age = CdccmUtilities.getAge(childPOJO.getDob());
 			int ageGroup = CdccmUtilities.getAge(childPOJO.getDob());

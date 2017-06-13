@@ -32,7 +32,7 @@ public class AdminController {
 		do {
 			System.out.println("Please Select An Operation To Perform");
 			System.out.println(
-					"1. Register A Child \n2. Register Care Provider \n3. Add Activity To All Children \n4. Add Activity For A Child \n5. Update Child, Prent or Care Provider Info \n6. List All Children   \n7. Update Activity and Care Provider "
+					"1. Register A Child \n2. Register Care Provider \n3. Add Activity To All Children \n4. Add Activity For A Child \n5. Update Child, Parent or Care Provider Info \n6. List All Children   \n7. Update Activity and Care Provider "
 							+ "\n8. Send News or Events To Parent \n9. Send Schedule Of Child\n10.Generate Performance Report Of Child \n11.Provide Feedback  Of Care Provider \n12.Main Menu.");
 			int choice = 0;
 			choice = Integer.parseInt(inputScanner.nextLine());
