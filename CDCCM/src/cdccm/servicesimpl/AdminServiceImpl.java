@@ -344,12 +344,13 @@ public class AdminServiceImpl implements AdminService {
 	public void updateActivityToChild(AssignActivityPOJO assignActivityPOJO) {
 
 		try {
+			System.out.println("this is first line");
 			ResultSet singleChild, resultSetActivity = null;
 			String query = "SELECT FK_AGE_GROUP FROM CHILD_INFO WHERE IDCHILD = ?";
 			String activityQuery = "select idactivity,activity_name,fk_idcareprovider,activity_description from activity where fk_age_group = ? AND fk_session = ? ";
-			String updateReport = "UPDATE REPORT SET fk_idactivity =  ? , fk_idprovider= WHERE fk_idchild = ? AND fk_idsession = ?";
-			singleChild = dbConnector.displayInfo(query, assignActivityPOJO.getActivityID());
-			while (singleChild.next()) {
+			String updateReport = "UPDATE REPORT SET fk_idactivity =  ? , fk_idprovider= ? WHERE fk_idchild = ? AND fk_idsession = ?";
+			singleChild = dbConnector.displayInfo(query, assignActivityPOJO.getChildID());
+			if (singleChild.next()) {
 				assignActivityPOJO.setAgeGroup(singleChild.getInt("FK_AGE_GROUP"));
 				resultSetActivity = dbConnector.selectActivity(activityQuery, assignActivityPOJO);
 				System.out.println("\n------------Activities and Care Provider Available For Your Child----------");
@@ -363,7 +364,7 @@ public class AdminServiceImpl implements AdminService {
 				assignActivityPOJO.setActivityID(inputChoice.nextInt());
 				System.out.println("\nSelect Care Provider ID available for your child");
 				assignActivityPOJO.setCareProviderID(inputChoice.nextInt());
-				int result = dbConnector.updateReport(activityQuery, assignActivityPOJO);
+				int result = dbConnector.updateReport(updateReport, assignActivityPOJO);
 				if (result > 0) {
 					System.out.println("Activity Updated!!");
 				} else {

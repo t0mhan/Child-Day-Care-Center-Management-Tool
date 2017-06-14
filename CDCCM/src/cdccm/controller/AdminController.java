@@ -376,13 +376,13 @@ public class AdminController {
 					"Select For Which Session You Want To Update (Select 1 For Morning 2 For Afternoon 3 For Evening)");
 			assignActivityPOJO.setSession(inputScanner.nextInt());
 			adminService.updateActivityToChild(assignActivityPOJO);
-			System.out.println("Do You Want To Update More Activity? Press Yes");
-			String choice = inputScanner.nextLine().toUpperCase();
-			if (choice.equals("YES")) {
-
-			} else {
-				moreEntry = false;
-			}
+			//System.out.println("Do You Want To Update More Activity? Press Yes");
+			//String choice = inputScanner.nextLine().toUpperCase();
+//			if (choice.equals("YES")) {
+//
+//			} else {
+//				moreEntry = false;
+//			}
 		} while (moreEntry);
 	}
 
