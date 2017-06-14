@@ -75,7 +75,6 @@ public class AdminController {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("Number taken");
 				break;
 			case 9:
 				SendNewsEventsReports();
@@ -340,20 +339,22 @@ public class AdminController {
 
 	private void AddActivityToChild() throws SQLException {
 		boolean moreEntry = true;
+		int ageGroup = 0;
 		AssignActivityPOJO assignActivityPOJO = new AssignActivityPOJO();
 		System.out.println("Enter Child ID To Assign Activity and Care Provider");
 		assignActivityPOJO.setChildID(inputScanner.nextInt());
 		ChildPOJO childData = adminService.displayChild(assignActivityPOJO.getChildID());
 		if (childData != null) {
-			System.out.println("Child ID: " + childData.getChildId());
 			System.out.println("First Name: " + childData.getFirst_name());
 			System.out.println("Last Name: " + childData.getLast_name());
 			System.out.println("Date Of Birth: " + childData.getDob());
 			System.out.println("Age:" + childData.getAge());
+			assignActivityPOJO.setAgeGroup(childData.getAge());
 		}
 		do {
 			System.out.println("Enter The Session (For Morning 1, For Afternoon 2, For Evening 3)");
 			assignActivityPOJO.setSession(inputScanner.nextInt());
+			//assignActivityPOJO.setAgeGroup(ageGroup);
 			adminService.assignActivityToChild(assignActivityPOJO);
 
 			System.out.println("Do You Want To Assign more Activity? Press Yes");
@@ -377,7 +378,7 @@ public class AdminController {
 			adminService.updateActivityToChild(assignActivityPOJO);
 			System.out.println("Do You Want To Update More Activity? Press Yes");
 			String choice = inputScanner.nextLine().toUpperCase();
-			if (choice == "YES") {
+			if (choice.equals("YES")) {
 
 			} else {
 				moreEntry = false;
@@ -526,8 +527,8 @@ public class AdminController {
 			System.out.println("Last Name: " + childData.getLast_name());
 			System.out.println("Date Of Birth: " + childData.getDob());
 			System.out.println("Age:" + childData.getAge());
-
-			System.out.println("++++++++++ To Update the Data Please Enter Details Of Child ++++++++++\n ");
+			
+			System.out.println("++++++++++ To Update the Data, Please Enter Details Of Child ++++++++++\n ");
 			System.out.println("Enter The First Name: ");
 			childObj.setFirst_name(inputScanner.nextLine());
 			System.out.println("Enter The Last Name: ");
@@ -603,8 +604,6 @@ public class AdminController {
 			System.out.println("Name: " + careProviderObj.getName());
 			System.out.println("Email Id: " + careProviderObj.getEmail());
 			System.out.println("Phone number: " + careProviderObj.getPhoneNumber());
-			System.out.println("Enter The Complete Name: ");
-			careProviderObj.setName(inputScanner.nextLine());
 
 			System.out.println("Please Enter Feedback/Suggestions For Care Provider");
 			providerFeedbackPOJO.setFeedback(inputScanner.nextLine());

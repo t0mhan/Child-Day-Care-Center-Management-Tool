@@ -120,11 +120,9 @@ public class AdminServiceImpl implements AdminService {
 						resultSetChildren.getString(3), resultSetChildren.getDate(4).toString(),
 						resultSetChildren.getInt(5)));
 			}
-
 		} catch (SQLException e) {
 			System.out.println("Problem In retriving Child Info " + e);
 		}
-
 		return childrenList;
 	}
 
@@ -246,14 +244,12 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void assignActivityToChild(AssignActivityPOJO assignActivityPOJO) {
 		ResultSet resultSet = null;
+
 		int recordInsert;
 		try {
-
-			java.sql.PreparedStatement ps = dbConnector.getInstance().ps(
-					"select idactivity,activity_name, fk_idcareprovider,activity_description from activity where fk_age_group = ? AND fk_session = ? ");
-			ps.setInt(1, assignActivityPOJO.getAgeGroup());
-			ps.setInt(2, assignActivityPOJO.getSession());
-			resultSet = ps.executeQuery();
+			String query = "select idactivity,activity_name, fk_idcareprovider,activity_description from activity where fk_age_group = ? AND fk_session = ? ";
+			resultSet = dbConnector.assignActivity(query, assignActivityPOJO.getAgeGroup(),
+					assignActivityPOJO.getSession());
 			System.out.println("\n------------Activities and Care Provider Available For Child----------\n");
 			while (resultSet.next()) {
 				System.out.println("Activity ID: " + resultSet.getInt("idactivity"));
@@ -288,90 +284,53 @@ public class AdminServiceImpl implements AdminService {
 
 			int resultUpdate = 0;
 			String updateQuery = "";
-			int age = CdccmUtilities.getAge(childPOJO.getDob());
+			childPOJO.setAge(CdccmUtilities.getAge(childPOJO.getDob()));
 			int ageGroup = CdccmUtilities.getAge(childPOJO.getDob());
-			if (age < 0 || ageGroup > 4) {
+			if (childPOJO.getAge() < 0 || ageGroup > 4) {
 				System.out.println("Child Is Either Too Young Or Too Old For Day Care!! \n");
 			} else {
-				java.sql.PreparedStatement ps = dbConnector.getInstance().ps(
-						"Update CHILD_INFO SET NAME = ?,  surname = ?, dob = ?,  age = ?,  fk_age_group = ?  WHERE idchild = ? ");
-				ps.setString(1, childPOJO.getFirst_name());
-				ps.setString(2, childPOJO.getLast_name());
-				ps.setString(3, childPOJO.getDob());
-				ps.setInt(4, age);
-				ps.setInt(5, ageGroup);
-				ps.setInt(6, childId);
-				resultUpdate = ps.executeUpdate();
-				if (resultUpdate > 0) {
-					System.out.println("Child Record Updated!! \n");
-				} else
-					System.out.println("Error Occured, Record Not Updated");
+				String query = "Update CHILD_INFO SET NAME = ?,  surname = ?, dob = ?,  age = ?,  fk_age_group = ?  WHERE idchild = ? ";
+				resultUpdate = dbConnector.updateChild(query, childPOJO, ageGroup, childId);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
+			if (resultUpdate > 0) {
+				System.out.println("Child Record Updated!! \n");
+			} else
+				System.out.println("Error Occured, Record Not Updated");
+		} catch (ParseException e1) {
+			e1.printStackTrace();
 		}
 	}
 
 	@Override
 	public void updateParentInfo(int parentId, ParentPOJO parentPOJO) {
 		int resultUpdate = 0;
-		try {
-			java.sql.PreparedStatement ps = dbConnector.getInstance()
-					.ps("UPDATE PARENT SET name = '" + parentPOJO.getParentFirst_name() + "', surname = '"
-							+ parentPOJO.getParentLast_name() + "' WHERE IDPARENT = ? ");
-			ps.setInt(1, parentId);
-			resultUpdate = ps.executeUpdate();
-			if (resultUpdate > 0) {
-				System.out.println("Parent Record Updated!!\n");
-			} else
-				System.out.println("Error Occured, Record Not Updated");
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		String query = "UPDATE PARENT SET name = ?, surname = ? WHERE IDPARENT = ? ";
+		resultUpdate = dbConnector.updateParent(query, parentPOJO, parentId);
+		if (resultUpdate > 0) {
+			System.out.println("Parent Record Updated!!\n");
+		} else
+			System.out.println("Error Occured, Record Not Updated");
 	}
 
 	public void updateContactInfo(int parentId, ContactPOJO contactPOJO) {
 		int resultUpdate = 0;
-		try {
-			java.sql.PreparedStatement ps = dbConnector.getInstance()
-					.ps("UPDATE CONTACT SET street = '" + contactPOJO.getStreet() + "', city = '"
-							+ contactPOJO.getCity() + "', pincode = " + contactPOJO.getPincode() + ", phone_number = '"
-							+ contactPOJO.getPhoneNumber() + "', emailid = '" + contactPOJO.getEmail()
-							+ "' WHERE FK_IDPARENT = ? ");
-			ps.setInt(1, parentId);
-			resultUpdate = ps.executeUpdate();
-			if (resultUpdate > 0) {
-				System.out.println("Contact Updated!!\n");
-			} else
-				System.out.println("Error Occured, Record Not Updated");
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		String query = "UPDATE CONTACT SET street = ?, city = ? , pincode = ?, phone_number = ? , emailid = ? WHERE FK_IDPARENT = ? ";
+		resultUpdate = dbConnector.updateContact(query, contactPOJO, parentId);
+		if (resultUpdate > 0) {
+			System.out.println("Contact Updated!!\n");
+		} else
+			System.out.println("Error Occured, Record Not Updated");
 	}
 
 	@Override
 	public void updateCareProviderInfo(int careProviderId, CareProviderPOJO careProviderPOJO) {
 		int resultUpdate = 0;
-		try {
-
-			java.sql.PreparedStatement preparedStatement = MySQLDBConnector.getInstance()
-					.ps("UPDATE CARE_PROVIDER SET name = ?,emailid = ?, phone_number = ? Where idcare_provider = ? ");
-			preparedStatement.setString(1, careProviderPOJO.getName());
-			preparedStatement.setString(2, careProviderPOJO.getEmail());
-			preparedStatement.setString(3, careProviderPOJO.getPhoneNumber());
-			preparedStatement.setInt(4, careProviderId);
-			resultUpdate = preparedStatement.executeUpdate();
-			if (resultUpdate > 0) {
-				System.out.println("Care Provider Record Updated!!\n");
-			} else
-				System.out.println("Error Occured, Record Not Updated");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		String query = "UPDATE CARE_PROVIDER SET name = ?,emailid = ?, phone_number = ? Where idcare_provider = ? ";
+		resultUpdate = dbConnector.updateCareProvider(query, careProviderPOJO, careProviderId);
+		if (resultUpdate > 0) {
+			System.out.println("Care Provider Record Updated!!\n");
+		} else
+			System.out.println("Error Occured, Record Not Updated");
 	}
 
 	@Override
@@ -385,40 +344,31 @@ public class AdminServiceImpl implements AdminService {
 	public void updateActivityToChild(AssignActivityPOJO assignActivityPOJO) {
 
 		try {
-			ResultSet resultSet = null;
-			java.sql.PreparedStatement getChildAgeGroup = dbConnector.getInstance()
-					.ps("SELECT FK_AGE_GROUP FROM CHILD_INFO WHERE IDCHILD = ?");
-			getChildAgeGroup.setInt(1, assignActivityPOJO.getChildID());
-			ResultSet singleChild = getChildAgeGroup.executeQuery();
+			ResultSet singleChild, resultSetActivity = null;
+			String query = "SELECT FK_AGE_GROUP FROM CHILD_INFO WHERE IDCHILD = ?";
+			String activityQuery = "select idactivity,activity_name,fk_idcareprovider,activity_description from activity where fk_age_group = ? AND fk_session = ? ";
+			String updateReport = "UPDATE REPORT SET fk_idactivity =  ? , fk_idprovider= WHERE fk_idchild = ? AND fk_idsession = ?";
+			singleChild = dbConnector.displayInfo(query, assignActivityPOJO.getActivityID());
 			while (singleChild.next()) {
 				assignActivityPOJO.setAgeGroup(singleChild.getInt("FK_AGE_GROUP"));
-			}
-			java.sql.PreparedStatement preparedStatement = dbConnector.getInstance().ps(
-					"select idactivity,activity_name,fk_idcareprovider,activity_description from activity where fk_age_group = ? AND fk_session = ? ");
-			preparedStatement.setInt(1, assignActivityPOJO.getAgeGroup());
-			preparedStatement.setInt(2, assignActivityPOJO.getSession());
-			resultSet = preparedStatement.executeQuery();
-			System.out.println("\n------------Activities and Care Provider Available For Your Child----------");
-			while (resultSet.next()) {
-				System.out.println("Activity ID: " + resultSet.getInt("idactivity"));
-				System.out.println("Activity Name: " + resultSet.getString("activity_name"));
-				System.out.println("Care Provider ID: " + resultSet.getInt("fk_idcareprovider"));
-				System.out.println("Date Of Birth: " + resultSet.getString("activity_description"));
-			}
-			System.out.println("\nSelect Activity ID available for your child");
-			assignActivityPOJO.setActivityID(inputChoice.nextInt());
-			System.out.println("\nSelect Care Provider ID available for your child");
-			assignActivityPOJO.setCareProviderID(inputChoice.nextInt());
-			java.sql.PreparedStatement preparedStatementUpdate = dbConnector.getInstance()
-					.ps("UPDATE REPORT SET fk_idactivity = " + assignActivityPOJO.getActivityID() + ", fk_idprovider= "
-							+ assignActivityPOJO.getCareProviderID() + " WHERE fk_idchild = ? AND fk_idsession = ?");
-			preparedStatementUpdate.setInt(1, assignActivityPOJO.getChildID());
-			preparedStatementUpdate.setInt(2, assignActivityPOJO.getSession());
-			int result = preparedStatementUpdate.executeUpdate();
-			if (result > 0) {
-				System.out.println("Activity Updated!!");
-			} else {
-				System.out.println("Activity Not Updated!!");
+				resultSetActivity = dbConnector.selectActivity(activityQuery, assignActivityPOJO);
+				System.out.println("\n------------Activities and Care Provider Available For Your Child----------");
+				while (resultSetActivity.next()) {
+					System.out.println("Activity ID: " + resultSetActivity.getInt("idactivity"));
+					System.out.println("Activity Name: " + resultSetActivity.getString("activity_name"));
+					System.out.println("Care Provider ID: " + resultSetActivity.getInt("fk_idcareprovider"));
+					System.out.println("Date Of Birth: " + resultSetActivity.getString("activity_description"));
+				}
+				System.out.println("\nSelect Activity ID available for your child");
+				assignActivityPOJO.setActivityID(inputChoice.nextInt());
+				System.out.println("\nSelect Care Provider ID available for your child");
+				assignActivityPOJO.setCareProviderID(inputChoice.nextInt());
+				int result = dbConnector.updateReport(activityQuery, assignActivityPOJO);
+				if (result > 0) {
+					System.out.println("Activity Updated!!");
+				} else {
+					System.out.println("Activity Not Updated!!");
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -430,10 +380,8 @@ public class AdminServiceImpl implements AdminService {
 		ResultSet resultSetchildData = null;
 		ChildPOJO childObj = new ChildPOJO();
 		try {
-			java.sql.PreparedStatement ps = dbConnector
-					.ps("SELECT name, surname, dob, age  FROM CHILD_INFO WHERE IDCHILD = ? ");
-			ps.setInt(1, id);
-			resultSetchildData = ps.executeQuery();
+			String query = "SELECT name, surname, dob, age  FROM CHILD_INFO WHERE IDCHILD = ? ";
+			resultSetchildData = dbConnector.displayInfo(query, id);
 			if (resultSetchildData.next()) {
 				childObj.setFirst_name(resultSetchildData.getString("name"));
 				childObj.setLast_name(resultSetchildData.getString("surname"));
@@ -452,10 +400,8 @@ public class AdminServiceImpl implements AdminService {
 		ParentPOJO parentObject = null;
 		List<ContactPOJO> listOfContacts = new ArrayList<>();
 		try {
-			java.sql.PreparedStatement ps = dbConnector.ps(
-					"SELECT p.name, p.surname, c.street, c.city, c.pincode, c.phone_number, c.emailid FROM PARENT p JOIN CONTACT c on p.idparent=c.fk_idparent WHERE idparent =  ? ");
-			ps.setInt(1, id);
-			resultSetParent = ps.executeQuery();
+			String query = "SELECT p.name, p.surname, c.street, c.city, c.pincode, c.phone_number, c.emailid FROM PARENT p JOIN CONTACT c on p.idparent=c.fk_idparent WHERE idparent =  ? ";
+			resultSetParent = dbConnector.displayInfo(query, id);
 			if (resultSetParent.next()) {
 				parentObject = new ParentPOJO();
 				parentObject.setParentFirst_name(resultSetParent.getString("name"));
@@ -477,11 +423,8 @@ public class AdminServiceImpl implements AdminService {
 		CareProviderPOJO careProviderObj = new CareProviderPOJO();
 		ResultSet resultSetProvider = null;
 		try {
-			dbConnector.query("SELECT * FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = " + id);
-			java.sql.PreparedStatement ps = dbConnector.ps(
-					"SELECT idcare_provider, name, emailid, phone_number FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = ? ");
-			ps.setInt(1, id);
-			resultSetProvider = ps.executeQuery();
+			String query = "SELECT idcare_provider, name, emailid, phone_number FROM CARE_PROVIDER WHERE IDCARE_PROVIDER = ?";
+			resultSetProvider = dbConnector.displayInfo(query, id);
 			if (resultSetProvider.next()) {
 				careProviderObj.setName(resultSetProvider.getString("name"));
 				careProviderObj.setEmail(resultSetProvider.getString("emailid"));
@@ -498,7 +441,7 @@ public class AdminServiceImpl implements AdminService {
 		try {
 			int feedback = dbConnector
 					.insert("INSERT INTO FEEDBACK(FK_IDPARENT,FK_IDCARE_PROVIDER,PARENT_FEEDBACK) VALUES('"
-							+ providerFeedbackPOJO.getCareProviderId() + "','" + providerFeedbackPOJO.getParentId()
+							+ providerFeedbackPOJO.getParentId() + "','" + providerFeedbackPOJO.getCareProviderId()
 							+ "','" + providerFeedbackPOJO.getFeedback() + "')");
 			if (feedback > 0) {
 				System.out.println("Suggestions/Feedback Added Succesfully!!\n");
@@ -518,7 +461,7 @@ public class AdminServiceImpl implements AdminService {
 		while (it.hasNext()) {
 			FoodPOJO foodobj = (FoodPOJO) it.next();
 			try {
-				resultCountFood = dbConnector.insert("INSERT INTO FOOD(day, breakfast, lunch,snacks) VALUES('"
+				resultCountFood = dbConnector.insert("INSERT INTO FOOD(day, breakfast, lunch,snak) VALUES('"
 						+ foodobj.getDay() + "','" + foodobj.getBreakfast() + "','" + foodobj.getLunch() + "','"
 						+ foodobj.getSnack() + "')");
 				if ((resultCountFood > 0))

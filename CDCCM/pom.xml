@@ -30,7 +30,6 @@
             <artifactId>joda-time</artifactId>
             <version>2.9.9</version>
         </dependency>
-
         <dependency>
             <groupId>ar.com.fdvs</groupId>
             <artifactId>DynamicJasper</artifactId>
@@ -42,5 +41,4 @@
 			<version>1.5.6</version>
 		</dependency>
 	</dependencies>
-	
 </project>
